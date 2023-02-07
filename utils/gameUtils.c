@@ -57,9 +57,18 @@ void init_game(char *mot, char *lettre_mot, char *mot_devine)
 
         if (strchr(lettre_mot, mot[i]) == 0)
         {
-            printf("%c", mot[i]);
+            // printf("%c", mot[i]);
             strcat(lettre_mot, &mot[i]);
         }
         strcat(mot_devine, "_");
     }
+}
+
+int verif_erreurs(int *erreurs)
+{
+    if(*erreurs == 6)
+    {
+        return 1;
+    }
+    return 0;
 }

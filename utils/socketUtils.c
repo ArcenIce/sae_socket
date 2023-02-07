@@ -30,7 +30,7 @@ char serverGetMessage(int *dialog) {
 
 }
 
-int serverSendMessage(int *dialog, char message[]) {
+int serverSendMessage(int *dialog, char *message) {
     int ecrits;
 	ecrits = write(*dialog, message, strlen(message)); 
 	switch(ecrits){

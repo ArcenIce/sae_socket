@@ -82,7 +82,7 @@ int main(int argc, char *argv[]){
 	printf("Entrez une lettre à vérifier : ");
 	scanf("%c", messageEnvoi);
 	clientSendMessage(&descripteurSocket, messageEnvoi);
-
+	*messageRecu = clientGetMessage(&descripteurSocket);
 
 	close(descripteurSocket);
 
