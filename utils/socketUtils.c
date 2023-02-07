@@ -9,10 +9,11 @@
 
 #define LG_MESSAGE 256
 
-char* getMessage(int *dialog) {
+char getMessage(int *dialog) {
 
     int lus;
     char messageRecu[LG_MESSAGE];
+    memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 
     lus = read(*dialog, messageRecu, LG_MESSAGE*sizeof(char)); // ici appel bloquant
     switch(lus) {
@@ -28,6 +29,6 @@ char* getMessage(int *dialog) {
             printf("Message reçu : %s (%d octets)\n\n", messageRecu, lus);
     }
 
-    return &messageRecu;
+    return *messageRecu;
 
 }

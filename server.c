@@ -98,7 +98,8 @@ int main(int argc, char *argv[]){
 
         // while (stop == 0) {
 
-        *messageRecu = getMessage(&socketDialogue);
+		char message[LG_MESSAGE];
+    	*message = getMessage(&socketDialogue);
 
         // }
 
