@@ -7,6 +7,8 @@
 #include <netinet/in.h> /* pour struct sockaddr_in */
 #include <arpa/inet.h> /* pour htons et inet_aton */
 
+#include "utils/socketUtils.c"
+
 #define LG_MESSAGE 256
 
 int main(int argc, char *argv[]){
@@ -71,31 +73,9 @@ int main(int argc, char *argv[]){
 	printf("Connexion au serveur %s:%d réussie!\n",ip_dest,port_dest);
 
  	// Envoi du message
-	switch(nb = write(descripteurSocket, messageEnvoi, strlen(messageEnvoi))){
-		case -1 : /* une erreur ! */
-     			perror("Erreur en écriture...");
-		     	close(descripteurSocket);
-		     	exit(-3);
-		case 0 : /* la socket est fermée */
-			fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
-			return 0;
-		default: /* envoi de n octets */
-			printf("Message %s envoyé! (%d octets)\n\n", messageEnvoi, nb);
-	}
+	clientSendMessage(&descripteurSocket, messageEnvoi);
 
-	/* Reception des données du serveur */
-	switch(nb = read(descripteurSocket, messageRecu, LG_MESSAGE)) {
-		case -1 : /* une erreur ! */
-			perror("Erreur de lecture...");
-			close(descripteurSocket);
-			exit(-4);
-		case 0 : /* la socket est fermée */
-   		fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
-			return 0;
-		default: /* réception de n octets */
-		  messageRecu[nb]='\0';
-			printf("Message reçu du serveur : %s (%d octets)\n\n", messageRecu, nb);
-	}	// On ferme la ressource avant de quitter
+	*messageRecu = clientGetMessage(&descripteurSocket);
 
 	close(descripteurSocket);
 
