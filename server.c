@@ -7,6 +7,8 @@
 #include <netinet/in.h> /* pour struct sockaddr_in */
 #include <arpa/inet.h> /* pour htons et inet_aton */
 
+#include "utils/socketUtils.c"
+
 #define PORT IPPORT_USERRESERVED // = 5000 (ports >= 5000 réservés pour usage explicite)
 
 #define LG_MESSAGE 256
@@ -91,21 +93,14 @@ int main(int argc, char *argv[]){
    			close(socketEcoute);
    			exit(-4);
 		}
-		
-		// On réception les données du client (cf. protocole)
-		lus = read(socketDialogue, messageRecu, LG_MESSAGE*sizeof(char)); // ici appel bloquant
-		switch(lus) {
-			case -1 : /* une erreur ! */ 
-				  perror("read"); 
-				  close(socketDialogue); 
-				  exit(-5);
-			case 0  : /* la socket est fermée */
-				  fprintf(stderr, "La socket a été fermée par le client !\n\n");
-   				  close(socketDialogue);
-   				  return 0;
-			default:  /* réception de n octets */
-				  printf("Message reçu : %s (%d octets)\n\n", messageRecu, lus);
-		}
+
+        int stop = 0;
+
+        // while (stop == 0) {
+
+        *messageRecu = getMessage(&socketDialogue);
+
+        // }
 
 		// Déterminer le message à envoyer en fonction de la demande du client
 		if(strcmp(messageRecu,"heure")==0)

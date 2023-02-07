@@ -26,12 +26,11 @@ int main(int argc, char *argv[]){
 	// Si le serveur et le client tournent sur la même machine alors l'IP locale fonctionne : 127.0.0.1
 	// Le port d'écoute du serveur est 5000 dans cet exemple, donc en local utiliser la commande :
 	// ./client_base_tcp 127.0.0.1 5000 heure
-	if (argc>2) { // si il y a au moins 3 arguments passés en ligne de commande, récupération ip, port et message
+	if (argc>1) { // si il y a au moins 3 arguments passés en ligne de commande, récupération ip, port et message
 		strncpy(ip_dest,argv[1],16);
 		sscanf(argv[2],"%d",&port_dest);
-		strcpy(messageEnvoi,argv[3]);
 	}else{
-		printf("USAGE : %s ip port message\nmessage = heure ou date",argv[0]);
+		printf("USAGE : %s ip port message\n",argv[0]);
 		exit(-1);
 	}
 
