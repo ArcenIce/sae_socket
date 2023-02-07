@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "utils/socketUtils.c"
+#include "utils/gameUtils.c"
 
 #define PORT IPPORT_USERRESERVED // = 5000 (ports >= 5000 réservés pour usage explicite)
 
@@ -29,6 +30,9 @@ int main(int argc, char *argv[]){
 	int retour;
 
 	char mot[] = "TABULATION";
+	char lettre_mot[] = "";
+	char mot_devine[sizeof(mot)];
+	init_game(mot, &lettre_mot, &mot_devine);
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); 
