@@ -30,9 +30,9 @@ int main(int argc, char *argv[]){
 	int retour;
 
 	char mot[] = "TABULATION";
-	char lettre_mot[] = "";
+	char lettres_mot[] = "";
 	char mot_devine[sizeof(mot)];
-	init_game(mot, &lettre_mot, &mot_devine);
+	init_game(mot, &lettres_mot, &mot_devine);
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); 
@@ -78,11 +78,8 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-		char message[256] = "Le mot fait ";
-		char message2[] = " lettres de long, devinez le !";
-		char taille[128];
-		sprintf(taille, "%zu", strlen(mot)); strcat(message, taille); strcat(message, message2);
-
+		char message[512] = "Le mot fait "; char nblettres[128]; char message2[] = " lettres de long, devinez le ! \nVoici la forme du mot: ";
+		sprintf(nblettres, "%zu", strlen(mot)); strcat(message, nblettres); strcat(message, message2); strcat(message, mot_devine);
 
 		serverSendMessage(&socketDialogue, message);
 
@@ -90,6 +87,8 @@ int main(int argc, char *argv[]){
 
 		// On envoie des données vers le client (cf. protocole)
 		// serverSendMessage(&socketDialogue, messageRecu);
+
+		close(socketDialogue);
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);
