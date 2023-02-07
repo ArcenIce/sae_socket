@@ -36,9 +36,8 @@ void lire_date(char* date){
 }
 
 void envoyer_mot(char* mot){
-	FILE *fpipe;
-	
-	fppipe = popen("mot: "+mot)
+	printf(mot);
+	fgets(mot, LG_MESSAGE, NULL);
 }
 
 int main(int argc, char *argv[]){
@@ -47,6 +46,7 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in pointDeRencontreLocal;
 	socklen_t longueurAdresse;
 
+	char mot[4] = "test";
 	int socketDialogue;
 	struct sockaddr_in pointDeRencontreDistant;
 	char messageRecu[LG_MESSAGE];
@@ -118,6 +118,8 @@ int main(int argc, char *argv[]){
 			lire_heure(messageEnvoi);
 		else if(strcmp(messageRecu,"date")==0)
 			lire_date(messageEnvoi);
+		else if(strcmp(messageRecu,"mot")==0)
+			envoyer_mot(mot);
 		else
 			sprintf(messageEnvoi, "Commande non reconnue");
 
