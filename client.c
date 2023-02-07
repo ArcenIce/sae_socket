@@ -36,9 +36,6 @@ int main(int argc, char *argv[]){
 		exit(-1);
 	}
 
-	
-	printf("Entrez une lettre à vérifier : ");
-	scanf("%c", messageEnvoi);
 
 	// Crée un socket de communication
 	descripteurSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -73,9 +70,19 @@ int main(int argc, char *argv[]){
 	printf("Connexion au serveur %s:%d réussie!\n",ip_dest,port_dest);
 
  	// Envoi du message
-	clientSendMessage(&descripteurSocket, messageEnvoi);
+	// clientSendMessage(&descripteurSocket, messageEnvoi);
 
 	*messageRecu = clientGetMessage(&descripteurSocket);
+	printf("Bienvenue sur le serveur, le jeu va débuter\n");
+	int startGame = 0;
+	while ((messageRecu != "start")&&(startGame=0))
+	{
+		startGame = 1;
+	}
+	printf("Entrez une lettre à vérifier : ");
+	scanf("%c", messageEnvoi);
+	clientSendMessage(&descripteurSocket, messageEnvoi);
+
 
 	close(descripteurSocket);
 

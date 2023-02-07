@@ -83,12 +83,13 @@ int main(int argc, char *argv[]){
 		char taille[128];
 		sprintf(taille, "%zu", strlen(mot)); strcat(message, taille); strcat(message, message2);
 
+
 		serverSendMessage(&socketDialogue, message);
 
     	*messageRecu = serverGetMessage(&socketDialogue);
 
 		// On envoie des données vers le client (cf. protocole)
-		serverSendMessage(&socketDialogue, messageRecu);
+		// serverSendMessage(&socketDialogue, messageRecu);
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);
