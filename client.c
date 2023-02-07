@@ -33,6 +33,7 @@ int main(int argc, char *argv[]){
 		printf("USAGE : %s ip port message\n",argv[0]);
 		exit(-1);
 	}
+
 	
 	printf("Entrez une lettre à vérifier : ");
 	scanf("%c", messageEnvoi);
