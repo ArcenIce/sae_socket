@@ -13,6 +13,8 @@
 
 #define LG_MESSAGE 256
 
+//157.90.140.167
+
 int main(int argc, char *argv[]){
 	int socketEcoute;
 
@@ -23,7 +25,6 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in pointDeRencontreDistant;
 	char messageRecu[LG_MESSAGE];
 	char messageEnvoi[LG_MESSAGE];
-	int ecrits, lus; /* nb d’octets ecrits et lus */
 	int retour;
 
 	// Crée un socket de communication
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]){
 	// Teste la valeur renvoyée par l’appel système socket() 
 	if(socketEcoute < 0){
 		perror("socket"); // Affiche le message d’erreur 
-	exit(-1); // On sort en indiquant un code erreur
+		exit(-1); // On sort en indiquant un code erreur
 	}
 	printf("Socket créée avec succès ! (%d)\n", socketEcoute); // On prépare l’adresse d’attachement locale
 
@@ -70,15 +71,12 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-		sendMessage(&socketDialogue, "Bienvenue");
+		sendMessage(&socketDialogue, "Bienvenue sur le serveur, le jeu va débuter");
 
     	*messageRecu = getMessage(&socketDialogue);
 
-		// Déterminer le message à envoyer en fonction de la demande du client
-		sprintf(messageEnvoi, "Commande non reconnue");
-
 		// On envoie des données vers le client (cf. protocole)
-		sendMessage(&socketDialogue, messageEnvoi);
+		sendMessage(&socketDialogue, "Commande non reconnue");
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);
