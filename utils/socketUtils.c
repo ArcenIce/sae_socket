@@ -33,7 +33,7 @@ char getMessage(int *dialog) {
 
 }
 
-void sendMessage(int *dialog, char message[]) {
+int sendMessage(int *dialog, char message[]) {
 
     int ecrits;
 	ecrits = write(*dialog, message, strlen(message)); 

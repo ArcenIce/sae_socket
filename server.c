@@ -70,6 +70,8 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
+		sendMessage(&socketDialogue, "Bienvenue");
+
     	*messageRecu = getMessage(&socketDialogue);
 
 		// Déterminer le message à envoyer en fonction de la demande du client
