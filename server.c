@@ -78,7 +78,7 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-		char message[] = "Le mot fait ";
+		char message[256] = "Le mot fait ";
 		char message2[] = " lettres de long, devinez le !";
 		char taille[128];
 		sprintf(taille, "%zu", strlen(mot)); strcat(message, taille); strcat(message, message2);
