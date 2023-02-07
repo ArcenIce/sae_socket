@@ -29,11 +29,14 @@ int main(int argc, char *argv[]){
 	if (argc>1) { // si il y a au moins 3 arguments passés en ligne de commande, récupération ip, port et message
 		strncpy(ip_dest,argv[1],16);
 		sscanf(argv[2],"%d",&port_dest);
-		strcpy(messageEnvoi,argv[3]);
 	}else{
 		printf("USAGE : %s ip port message\n",argv[0]);
 		exit(-1);
 	}
+
+	
+	printf("Entrez une lettre à vérifier : ");
+	scanf("%c", messageEnvoi);
 
 	// Crée un socket de communication
 	descripteurSocket = socket(AF_INET, SOCK_STREAM, 0);
