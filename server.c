@@ -71,12 +71,12 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-		sendMessage(&socketDialogue, "Bienvenue sur le serveur, le jeu va débuter");
+		// sendMessage(&socketDialogue, "Bienvenue sur le serveur, le jeu va débuter");
 
-    	*messageRecu = getMessage(&socketDialogue);
+    	*messageRecu = serverGetMessage(&socketDialogue);
 
 		// On envoie des données vers le client (cf. protocole)
-		sendMessage(&socketDialogue, "Commande non reconnue");
+		serverSendMessage(&socketDialogue, "Commande non reconnue");
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);

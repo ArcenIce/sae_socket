@@ -9,7 +9,7 @@
 
 #define LG_MESSAGE 256
 
-char getMessage(int *dialog) {
+char serverGetMessage(int *dialog) {
 
     int lus;
     char messageRecu[LG_MESSAGE];
@@ -33,7 +33,7 @@ char getMessage(int *dialog) {
 
 }
 
-int sendMessage(int *dialog, char message[]) {
+int serverSendMessage(int *dialog, char message[]) {
 
     int ecrits;
 	ecrits = write(*dialog, message, strlen(message)); 
@@ -50,6 +50,47 @@ int sendMessage(int *dialog, char message[]) {
    			printf("Message %s envoyé (%d octets)\n\n", message, ecrits);
 			// On ferme la socket de dialogue et on se replace en attente ...
    			close(*dialog);
+	}
+
+}
+
+char clientGetMessage(int *dialog) {
+
+    int nb;
+    char messageRecu[LG_MESSAGE];
+
+	/* Reception des données du serveur */
+	switch(nb = read(*dialog, messageRecu, LG_MESSAGE)) {
+		case -1 : /* une erreur ! */
+			perror("Erreur de lecture...");
+			close(*dialog);
+			exit(-4);
+		case 0 : /* la socket est fermée */
+   		fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
+			return 0;
+		default: /* réception de n octets */
+		  messageRecu[nb]='\0';
+			printf("Message reçu du serveur : %s (%d octets)\n\n", messageRecu, nb);
+	}	// On ferme la ressource avant de quitter
+
+    return *messageRecu;
+
+}
+
+int clientSendMessage(int *dialog, char message[]) {
+
+    int nb;
+
+	switch(nb = write(*dialog, message, strlen(message))){
+		case -1 : /* une erreur ! */
+     			perror("Erreur en écriture...");
+		     	close(*dialog);
+		     	exit(-3);
+		case 0 : /* la socket est fermée */
+			fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
+			return 0;
+		default: /* envoi de n octets */
+			printf("Message %s envoyé! (%d octets)\n\n", message, nb);
 	}
 
 }
