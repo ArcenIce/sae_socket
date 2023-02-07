@@ -30,9 +30,11 @@ int main(int argc, char *argv[]){
 	int retour;
 
 	char mot[] = "TABULATION";
-	char lettres_mot[] = "";
+	char lettres_mot[27];
 	char mot_devine[sizeof(mot)];
 	init_game(mot, &lettres_mot, &mot_devine);
+
+	printf("%s", lettres_mot);
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); 
@@ -84,6 +86,11 @@ int main(int argc, char *argv[]){
 		serverSendMessage(&socketDialogue, message);
 
     	*messageRecu = serverGetMessage(&socketDialogue);
+
+		if (verif_lettre(&messageRecu, &lettres_mot) == 1) {
+			remplace_lettre(&messageRecu, &mot, &mot_devine);
+			printf("%s", mot_devine);
+		}
 
 		// On envoie des données vers le client (cf. protocole)
 		// serverSendMessage(&socketDialogue, messageRecu);

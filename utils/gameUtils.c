@@ -28,20 +28,23 @@ int strinstr(char *cs, char *ct)
 
 int verif_lettre(char *lettre_donnee, char *lettres_mot)
 {
-    if (strinstr(lettre_donnee, lettres_mot) != -1)
+    for (int i = 0; i < strlen(lettres_mot); i++)
     {
-        return 1;
+        if (lettres_mot[i] == lettre_donnee)
+        {
+            return 1;
+        }
     }
     return 0;
 }
 
 void remplace_lettre(char *lettre_donne, char *mot, char *mot_devine)
 {
-    for (int i = 0; i < sizeof(mot); i++)
+    for (int i = 0; i < strlen(mot); i++)
     {
-        if (&lettre_donne == mot[i])
+        if (*lettre_donne == mot[i])
         {
-            mot_devine[i] = &lettre_donne;
+            mot_devine[i] = *lettre_donne;
         }
     }
 }
@@ -54,7 +57,6 @@ void init_game(char *mot, char *lettre_mot, char *mot_devine[])
         {
             strcat(lettre_mot, &ALPHABET[i]);
         }
-        // mot_devine[i] = "_";
-        strcat(mot_devine, "_ ");
+        strcat(mot_devine, "_");
     }
 }
