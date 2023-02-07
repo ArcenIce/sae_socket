@@ -29,10 +29,11 @@ int main(int argc, char *argv[]){
 	char messageEnvoi[LG_MESSAGE];
 	int retour;
 
-	char mot[] = "TABULATION";
+	char mot[LG_MESSAGE];
+	strcpy(mot, "TABULATION");
 	char lettres_mot[27];
 	char mot_devine[sizeof(mot)];
-	init_game(mot, &lettres_mot, &mot_devine);
+	init_game(&mot, &lettres_mot, &mot_devine);
 
 	printf("%s", lettres_mot);
 

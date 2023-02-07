@@ -6,31 +6,32 @@
 #include <string.h>     /* pour memset */
 #include <netinet/in.h> /* pour struct sockaddr_in */
 #include <arpa/inet.h>  /* pour htons et inet_aton */
+#include <string.h>
 
 #define ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-int strinstr(char *cs, char *ct)
-{
-    int index = -1;
+// int strinstr(char *cs, char *ct)
+// {
+//     int index = -1;
 
-    if (cs != NULL && ct != NULL)
-    {
-        char *ptr_pos = NULL;
+//     if (cs != NULL && ct != NULL)
+//     {
+//         char *ptr_pos = NULL;
 
-        ptr_pos = strstr(&cs, &ct);
-        if (ptr_pos != NULL)
-        {
-            index = ptr_pos - cs;
-        }
-    }
-    return index;
-}
+//         ptr_pos = strstr(&cs, &ct);
+//         if (ptr_pos != NULL)
+//         {
+//             index = ptr_pos - cs;
+//         }
+//     }
+//     return index;
+// }
 
 int verif_lettre(char *lettre_donnee, char *lettres_mot)
 {
     for (int i = 0; i < strlen(lettres_mot); i++)
     {
-        if (lettres_mot[i] == lettre_donnee)
+        if (lettres_mot[i] == *lettre_donnee)
         {
             return 1;
         }
@@ -49,13 +50,15 @@ void remplace_lettre(char *lettre_donne, char *mot, char *mot_devine)
     }
 }
 
-void init_game(char *mot, char *lettre_mot, char *mot_devine[])
+void init_game(char *mot, char *lettre_mot, char *mot_devine)
 {
     for (int i = 0; i < strlen(mot); i++)
     {
-        if ((strinstr(&mot, &ALPHABET[i]) != -1) && (strinstr(*lettre_mot, &ALPHABET[i]) != -1))
+
+        if (strchr(lettre_mot, mot[i]) == 0)
         {
-            strcat(lettre_mot, &ALPHABET[i]);
+            printf("%c", mot[i]);
+            strcat(lettre_mot, &mot[i]);
         }
         strcat(mot_devine, "_");
     }
