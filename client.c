@@ -7,132 +7,94 @@
 #include <netinet/in.h> /* pour struct sockaddr_in */
 #include <arpa/inet.h> /* pour htons et inet_aton */
 
-#define PORT IPPORT_USERRESERVED // = 5000 (ports >= 5000 réservés pour usage explicite)
-
 #define LG_MESSAGE 256
 
-void lire_heure(char* heure){
-	FILE *fpipe;
-	
-	fpipe = popen("date '+%X'","r");
-	if (fpipe == NULL){
-    	perror("popen" );
-    	exit(-1);
-  	}
-	fgets(heure, LG_MESSAGE, fpipe);
-	pclose(fpipe);
-}
-
-void lire_date(char* date){
-	FILE *fpipe;
-	
-	fpipe = popen("date '+%A %d %B %Y'","r");
-	if (fpipe == NULL){
-    	perror("popen" );
-    	exit(-1);
-  	}
-	fgets(date, LG_MESSAGE, fpipe);
-	pclose(fpipe);
-}
-
 int main(int argc, char *argv[]){
-	int socketEcoute;
-
-	struct sockaddr_in pointDeRencontreLocal;
+	int descripteurSocket;
+	struct sockaddr_in sockaddrDistant;
 	socklen_t longueurAdresse;
 
-	int socketDialogue;
-	struct sockaddr_in pointDeRencontreDistant;
-	char messageRecu[LG_MESSAGE];
-	char messageEnvoi[LG_MESSAGE];
-	int ecrits, lus; /* nb d’octets ecrits et lus */
-	int retour;
+	char messageEnvoi[LG_MESSAGE]; // buffer stockant le message à envoyer
+	char messageRecu[LG_MESSAGE]; // buffer stockant le message reçur
+	int nb; /* nb d’octets écrits et lus */
 
-	// Crée un socket de communication
-	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); 
-	// Teste la valeur renvoyée par l’appel système socket() 
-	if(socketEcoute < 0){
-		perror("socket"); // Affiche le message d’erreur 
-	exit(-1); // On sort en indiquant un code erreur
+	char ip_dest[16];
+	int  port_dest;
+
+	// Pour pouvoir contacter le serveur, le client doit connaître son adresse IP et le port de comunication
+	// Ces 2 informations sont passées sur la ligne de commande
+	// Si le serveur et le client tournent sur la même machine alors l'IP locale fonctionne : 127.0.0.1
+	// Le port d'écoute du serveur est 5000 dans cet exemple, donc en local utiliser la commande :
+	// ./client_base_tcp 127.0.0.1 5000 heure
+	if (argc>2) { // si il y a au moins 3 arguments passés en ligne de commande, récupération ip, port et message
+		strncpy(ip_dest,argv[1],16);
+		sscanf(argv[2],"%d",&port_dest);
+		strcpy(messageEnvoi,argv[3]);
+	}else{
+		printf("USAGE : %s ip port message\nmessage = heure ou date",argv[0]);
+		exit(-1);
 	}
-	printf("Socket créée avec succès ! (%d)\n", socketEcoute); // On prépare l’adresse d’attachement locale
 
-	// Remplissage de sockaddrDistant (structure sockaddr_in identifiant le point d'écoute local)
-	longueurAdresse = sizeof(pointDeRencontreLocal);
-
-	memset(&pointDeRencontreLocal, 0x00, longueurAdresse); pointDeRencontreLocal.sin_family = PF_INET;
-	pointDeRencontreLocal.sin_addr.s_addr = htonl(INADDR_ANY); // attaché à toutes les interfaces locales disponibles
-	pointDeRencontreLocal.sin_port = htons(5050); // = 5000 ou plus
-	
-	// On demande l’attachement local de la socket
-	if((bind(socketEcoute, (struct sockaddr *)&pointDeRencontreLocal, longueurAdresse)) < 0) {
-		perror("bind");
-		exit(-2); 
+	// Crée un socket de communication
+	descripteurSocket = socket(AF_INET, SOCK_STREAM, 0);
+	// Teste la valeur renvoyée par l’appel système socket()
+	if(descripteurSocket < 0){
+		perror("Erreur en création de la socket..."); // Affiche le message d’erreur
+		exit(-1); // On sort en indiquant un code erreur
 	}
-	printf("Socket attachée avec succès !\n");
+	printf("Socket créée! (%d)\n", descripteurSocket);
 
-	// On fixe la taille de la file d’attente à 5 (pour les demandes de connexion non encore traitées)
-	if(listen(socketEcoute, 5) < 0){
-   		perror("listen");
-   		exit(-3);
+
+	// Remplissage de sockaddrDistant (structure sockaddr_in identifiant la machine distante)
+	// Obtient la longueur en octets de la structure sockaddr_in
+	longueurAdresse = sizeof(sockaddrDistant);
+	// Initialise à 0 la structure sockaddr_in
+	// memset sert à faire une copie d'un octet n fois à partir d'une adresse mémoire donnée
+	// ici l'octet 0 est recopié longueurAdresse fois à partir de l'adresse &sockaddrDistant
+	memset(&sockaddrDistant, 0x00, longueurAdresse);
+	// Renseigne la structure sockaddr_in avec les informations du serveur distant
+	sockaddrDistant.sin_family = AF_INET;
+	// On choisit le numéro de port d’écoute du serveur
+	sockaddrDistant.sin_port = htons(port_dest);
+	// On choisit l’adresse IPv4 du serveur
+	inet_aton(ip_dest, &sockaddrDistant.sin_addr);
+
+	// Débute la connexion vers le processus serveur distant
+	if((connect(descripteurSocket, (struct sockaddr *)&sockaddrDistant,longueurAdresse)) == -1){
+		perror("Erreur de connection avec le serveur distant...");
+		close(descripteurSocket);
+		exit(-2); // On sort en indiquant un code erreur
 	}
-	printf("Socket placée en écoute passive ...\n");
-	
-	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment ! 
-	while(1){
-		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
-		printf("Attente d’une demande de connexion (quitter avec Ctrl-C)\n\n");
-		
-		// c’est un appel bloquant
-		socketDialogue = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
-		if (socketDialogue < 0) {
-   			perror("accept");
-			close(socketDialogue);
-   			close(socketEcoute);
-   			exit(-4);
-		}
-		
-		// On réception les données du client (cf. protocole)
-		lus = read(socketDialogue, messageRecu, LG_MESSAGE*sizeof(char)); // ici appel bloquant
-		switch(lus) {
-			case -1 : /* une erreur ! */ 
-				  perror("read"); 
-				  close(socketDialogue); 
-				  exit(-5);
-			case 0  : /* la socket est fermée */
-				  fprintf(stderr, "La socket a été fermée par le client !\n\n");
-   				  close(socketDialogue);
-   				  return 0;
-			default:  /* réception de n octets */
-				  printf("Message reçu : %s (%d octets)\n\n", messageRecu, lus);
-		}
+	printf("Connexion au serveur %s:%d réussie!\n",ip_dest,port_dest);
 
-		// Déterminer le message à envoyer en fonction de la demande du client
-		if(strcmp(messageRecu,"heure")==0)
-			lire_heure(messageEnvoi);
-		else if(strcmp(messageRecu,"date")==0)
-			lire_date(messageEnvoi);
-		else
-			sprintf(messageEnvoi, "Commande non reconnue");
-
-		// On envoie des données vers le client (cf. protocole)
-		ecrits = write(socketDialogue, messageEnvoi, strlen(messageEnvoi)); 
-		switch(ecrits){
-			case -1 : /* une erreur ! */
-				  perror("write");
-   				  close(socketDialogue);
-   				  exit(-6);
-			case 0 :  /* la socket est fermée */
-				  fprintf(stderr, "La socket a été fermée par le client !\n\n");
-				  close(socketDialogue);
-				  return 0;
-			default:  /* envoi de n octets */
-   				  printf("Message %s envoyé (%d octets)\n\n", messageEnvoi, ecrits);
-				  // On ferme la socket de dialogue et on se replace en attente ...
-   				  close(socketDialogue);
-		}
+ 	// Envoi du message
+	switch(nb = write(descripteurSocket, messageEnvoi, strlen(messageEnvoi))){
+		case -1 : /* une erreur ! */
+     			perror("Erreur en écriture...");
+		     	close(descripteurSocket);
+		     	exit(-3);
+		case 0 : /* la socket est fermée */
+			fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
+			return 0;
+		default: /* envoi de n octets */
+			printf("Message %s envoyé! (%d octets)\n\n", messageEnvoi, nb);
 	}
-	// On ferme la ressource avant de quitter
-   	close(socketEcoute);
-	return 0; 
+
+	/* Reception des données du serveur */
+	switch(nb = read(descripteurSocket, messageRecu, LG_MESSAGE)) {
+		case -1 : /* une erreur ! */
+			perror("Erreur de lecture...");
+			close(descripteurSocket);
+			exit(-4);
+		case 0 : /* la socket est fermée */
+   		fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
+			return 0;
+		default: /* réception de n octets */
+		  messageRecu[nb]='\0';
+			printf("Message reçu du serveur : %s (%d octets)\n\n", messageRecu, nb);
+	}	// On ferme la ressource avant de quitter
+
+	close(descripteurSocket);
+
+	return 0;
 }
