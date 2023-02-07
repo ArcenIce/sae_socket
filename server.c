@@ -6,6 +6,7 @@
 #include <string.h> /* pour memset */
 #include <netinet/in.h> /* pour struct sockaddr_in */
 #include <arpa/inet.h> /* pour htons et inet_aton */
+#include <string.h>
 
 #include "utils/socketUtils.c"
 
@@ -26,6 +27,8 @@ int main(int argc, char *argv[]){
 	char messageRecu[LG_MESSAGE];
 	char messageEnvoi[LG_MESSAGE];
 	int retour;
+
+	char mot[] = "TABULATION";
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); 
@@ -71,12 +74,17 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-		// sendMessage(&socketDialogue, "Bienvenue sur le serveur, le jeu va débuter");
+		char message[] = "Le mot fait ";
+		char message2[] = " lettres de long, devinez le !";
+		char taille[128];
+		sprintf(taille, "%zu", strlen(mot)); strcat(message, taille); strcat(message, message2);
+
+		serverSendMessage(&socketDialogue, message);
 
     	*messageRecu = serverGetMessage(&socketDialogue);
 
 		// On envoie des données vers le client (cf. protocole)
-		serverSendMessage(&socketDialogue, "Commande non reconnue");
+		serverSendMessage(&socketDialogue, messageRecu);
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);
