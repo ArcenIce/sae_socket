@@ -13,30 +13,6 @@
 
 #define LG_MESSAGE 256
 
-void lire_heure(char* heure){
-	FILE *fpipe;
-	
-	fpipe = popen("date '+%X'","r");
-	if (fpipe == NULL){
-    	perror("popen" );
-    	exit(-1);
-  	}
-	fgets(heure, LG_MESSAGE, fpipe);
-	pclose(fpipe);
-}
-
-void lire_date(char* date){
-	FILE *fpipe;
-	
-	fpipe = popen("date '+%A %d %B %Y'","r");
-	if (fpipe == NULL){
-    	perror("popen" );
-    	exit(-1);
-  	}
-	fgets(date, LG_MESSAGE, fpipe);
-	pclose(fpipe);
-}
-
 int main(int argc, char *argv[]){
 	int socketEcoute;
 
@@ -94,39 +70,13 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-        int stop = 0;
-
-        // while (stop == 0) {
-
-		char message[LG_MESSAGE];
-    	*message = getMessage(&socketDialogue);
-
-        // }
+    	*messageRecu = getMessage(&socketDialogue);
 
 		// Déterminer le message à envoyer en fonction de la demande du client
-		if(strcmp(messageRecu,"heure")==0)
-			lire_heure(messageEnvoi);
-		else if(strcmp(messageRecu,"date")==0)
-			lire_date(messageEnvoi);
-		else
-			sprintf(messageEnvoi, "Commande non reconnue");
+		sprintf(messageEnvoi, "Commande non reconnue");
 
 		// On envoie des données vers le client (cf. protocole)
-		ecrits = write(socketDialogue, messageEnvoi, strlen(messageEnvoi)); 
-		switch(ecrits){
-			case -1 : /* une erreur ! */
-				  perror("write");
-   				  close(socketDialogue);
-   				  exit(-6);
-			case 0 :  /* la socket est fermée */
-				  fprintf(stderr, "La socket a été fermée par le client !\n\n");
-				  close(socketDialogue);
-				  return 0;
-			default:  /* envoi de n octets */
-   				  printf("Message %s envoyé (%d octets)\n\n", messageEnvoi, ecrits);
-				  // On ferme la socket de dialogue et on se replace en attente ...
-   				  close(socketDialogue);
-		}
+		sendMessage(&socketDialogue, messageEnvoi);
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);

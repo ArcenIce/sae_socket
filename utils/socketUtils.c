@@ -32,3 +32,24 @@ char getMessage(int *dialog) {
     return *messageRecu;
 
 }
+
+void sendMessage(int *dialog, char message[]) {
+
+    int ecrits;
+	ecrits = write(*dialog, message, strlen(message)); 
+	switch(ecrits){
+		case -1 : /* une erreur ! */
+			perror("write");
+   			close(*dialog);
+   			exit(-6);
+		case 0 :  /* la socket est fermée */
+			fprintf(stderr, "La socket a été fermée par le client !\n\n");
+			close(*dialog);
+			return 0;
+		default:  /* envoi de n octets */
+   			printf("Message %s envoyé (%d octets)\n\n", message, ecrits);
+			// On ferme la socket de dialogue et on se replace en attente ...
+   			close(*dialog);
+	}
+
+}
