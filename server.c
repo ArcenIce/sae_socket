@@ -23,10 +23,12 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in pointDeRencontreLocal;
 	socklen_t longueurAdresse;
 
-	int socketDialogue;
+	int socketJoueur1;
+	int socketJoueur2;
 	struct sockaddr_in pointDeRencontreDistant;
 	char messageRecu[LG_MESSAGE];
-	char messageEnvoi[LG_MESSAGE];
+	char messageJ1[LG_MESSAGE];
+	char messageJ2[LG_MESSAGE];
 	int retour;
 
 	char mot[LG_MESSAGE];
@@ -62,7 +64,7 @@ int main(int argc, char *argv[]){
 	printf("Socket attachée avec succès !\n");
 
 	// On fixe la taille de la file d’attente à 5 (pour les demandes de connexion non encore traitées)
-	if(listen(socketEcoute, 5) < 0){
+	if(listen(socketEcoute, 2) < 0){
    		perror("listen");
    		exit(-3);
 	}
@@ -74,25 +76,37 @@ int main(int argc, char *argv[]){
 		nberreurs[2] = "0";
 		init_game(&mot, lettresMot, motDevine);
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
-		printf("Attente d’une demande de connexion (quitter avec Ctrl-C)\n\n");
+		printf("Attente des demandes de connexion (quitter avec Ctrl-C)\n\n");
 
 		// c’est un appel bloquant
-		socketDialogue = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
-		if (socketDialogue < 0) {
+		socketJoueur1 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
+		if (socketJoueur1 < 0) {
    			perror("accept");
-			close(socketDialogue);
+			close(socketJoueur1);
    			close(socketEcoute);
    			exit(-4);
 		}
+		serverSendMessage(&socketJoueur1, "J1");
+		socketJoueur2 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
+		if (socketJoueur2 < 0)
+		{
+			perror("accept");
+			close(socketJoueur2);
+			close(socketEcoute);
+			exit(-4);
+		}
 
-		char message[512];
+		serverSendMessage(&socketJoueur2, "J2");
+		serverSendMessage(&socketJoueur1, "J2");
+
 		int fin = 0;
 
-		*message = message_debut(&message, &mot, &motDevine);
-		serverSendMessage(&socketDialogue, &message);
+		*messageJ2 = serverGetMessage(&socketJoueur1);
+
+		serverSendMessage(&socketJoueur2, &messageJ2);
 
 		while (fin == 0) {
-    		*messageRecu = serverGetMessage(&socketDialogue);
+    		*messageRecu = serverGetMessage(&socketJoueur1);
 
 			if (verif_lettre(messageRecu, lettresMot) == 1) {
 				remplace_lettre(&messageRecu, &mot, motDevine);
@@ -103,29 +117,27 @@ int main(int argc, char *argv[]){
 				sprintf(nberreurs, "%d", erreurs);
 			}
 
-			*message = message_actu(&message, &motDevine, &nberreurs);
-
 			int verif = checkStat(mot, motDevine, erreurs);
 			if (verif == 1) {
 				char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
 				strcat(messageFin,mot);
-				serverSendMessage(&socketDialogue, messageFin);
+				serverSendMessage(&socketJoueur1, messageFin);
 				fin = 1;
 			} 
 			else if (verif == 2) {
 				char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
 				strcat(messageFin,mot);
-				serverSendMessage(&socketDialogue, messageFin);
+				serverSendMessage(&socketJoueur1, messageFin);
 				fin = 1;
 			}
 			else{
-				serverSendMessage(&socketDialogue, message);
+				serverSendMessage(&socketJoueur1, messageJ1);
 			}
 
 			// On envoie des données vers le client (cf. protocole)
-			// serverSendMessage(&socketDialogue, messageRecu);
+			// serverSendMessage(&socketJoueur1, messageRecu);
 		}
-		close(socketDialogue);
+		close(socketJoueur1);
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);

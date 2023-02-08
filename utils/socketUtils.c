@@ -44,8 +44,8 @@ int serverSendMessage(int *dialog, char *message) {
    			printf("Message %s envoyé (%u octets)\n\n", message, ecrits);
 			// On ferme la socket de dialogue et on se replace en attente ...
 	}
-
 }
+
 
 char clientGetMessage(int *dialog) {
 

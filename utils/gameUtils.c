@@ -85,13 +85,19 @@ int checkStat(char *mot, char *motDevine, int erreurs){
 }
 
 char message_debut(char *messageModifiable, char *mot, char *motDevine) {
-    strcpy(messageModifiable, "");
-	char messageNblettres[150] = "Le mot fait \033[1m"; char nblettres[128]; char messageSuiteNblettres[34] = "\033[0m lettres de long, devinez le !";
+    strcpy(messageModifiable, "Le mot fait \033[1m");
+    char nblettres[128]; char messageSuiteNblettres[34] = "\033[0m lettres de long, devinez le !";
 	char messageForme[64] = "\nVoici la forme du mot: ";
 	sprintf(nblettres, "%zu", strlen(mot));
-	strcat(messageModifiable, messageNblettres); strcat(messageModifiable, nblettres); strcat(messageModifiable,messageSuiteNblettres);
+	strcat(messageModifiable, nblettres); strcat(messageModifiable,messageSuiteNblettres);
 	strcat(messageModifiable, messageForme); strcat(messageModifiable, motDevine);
+    return *messageModifiable;
+}
 
+int messageLettre(char *messageModifiable, char *lettre)
+{
+    strcpy(messageModifiable, "La lettre donnée par l'autre joueur est : ");
+    strcat(messageModifiable, lettre);
     return *messageModifiable;
 }
 
