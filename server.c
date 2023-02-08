@@ -113,9 +113,16 @@ int main(int argc, char *argv[]){
 		strcat(message_modifiable, message_erreurs); strcat(message_modifiable, nberreurs);
 		serverSendMessage(&socketDialogue, message_modifiable);
 
-		int win = strcmp(mot_devine, mot);
-		if (win == 0){
-			printf("Bravo vous avez trouvé le mot.\n");
+		int verif = checkStat(mot, mot_devine, erreurs);
+		if (verif == 1)
+		{
+			printf("Bravo vous avez trouvé le mot %s\n",mot);
+			close(socketDialogue);
+		}
+		else if(verif == 2)
+		{
+			printf("Dommage, vous avez perdu... Le mot était %s\n",mot);
+			close(socketDialogue);
 		}
 		
 		// On envoie des données vers le client (cf. protocole)
