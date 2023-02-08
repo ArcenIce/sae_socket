@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "*.html": "html",
-        "*.uscript": "plaintext",
-        "types.h": "c",
-        "stdio.h": "c",
-        "inet.h": "c"
-    }
-}

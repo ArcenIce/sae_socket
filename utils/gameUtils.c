@@ -85,8 +85,8 @@ int checkStat(char *mot, char *motDevine, int erreurs){
 
 char message_debut(char *messageModifiable, char *mot, char *motDevine) {
     strcpy(messageModifiable, "");
-	char messageNblettres[150] = "Le mot fait "; char nblettres[128]; char messageSuiteNblettres[34] = " lettres de long, devinez le !\n";
-	char messageForme[64] = "Voici la forme du mot: ";
+	char messageNblettres[150] = "Le mot fait \033[1m"; char nblettres[128]; char messageSuiteNblettres[34] = "\033[0m lettres de long, devinez le !";
+	char messageForme[64] = "\nVoici la forme du mot: ";
 	sprintf(nblettres, "%zu", strlen(mot));
 	strcat(messageModifiable, messageNblettres); strcat(messageModifiable, nblettres); strcat(messageModifiable,messageSuiteNblettres);
 	strcat(messageModifiable, messageForme); strcat(messageModifiable, motDevine);
