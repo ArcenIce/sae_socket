@@ -119,6 +119,8 @@ int main(int argc, char *argv[]){
 
 				joueur = 1;
 
+				serverSendMessage(&socketDialogue2, "C'est votre tour.\n");
+
 				*messageRecu = serverGetMessage(&socketDialogue2);
 
 				if (verif_lettre(messageRecu, lettresMot) == 1) {
@@ -152,6 +154,9 @@ int main(int argc, char *argv[]){
 			} else {
 
 				joueur = 2;
+
+				serverSendMessage(&socketDialogue1, "C'est votre tour.\n");
+
 				*messageRecu = serverGetMessage(&socketDialogue1);
 
 				if (verif_lettre(messageRecu, lettresMot) == 1) {

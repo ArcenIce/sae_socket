@@ -77,6 +77,9 @@ int main(int argc, char *argv[]){
 	int fin = 0;
 	while (fin == 0)
 	{
+
+		*messageRecu = clientGetMessage(&descripteurSocket);
+
 		printf("Entrez une lettre à vérifier : \n");
 		scanf("%s", messageEnvoi);
 		*messageEnvoi = toupper(*messageEnvoi);
