@@ -82,14 +82,12 @@ int main(int argc, char *argv[]){
 		clientSendMessage(&descripteurSocket, messageEnvoi);
 		*messageRecu = clientGetMessage(&descripteurSocket);
 
-		*messageRecu = clientGetMessage(&descripteurSocket);
-
 		if (strstr(messageRecu, "B") != NULL) {
 			printf("Gagner");
 			fin = 1;
 		}
 		else if (strstr(messageRecu, "D") != NULL){
-			printf("Perdu");
+			printf("Perdu, vous avez fait 6 erreurs");
 			fin = 1;
 		}
 		

@@ -97,15 +97,10 @@ char message_debut(char *messageModifiable, char *mot, char *motDevine) {
 char message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
     strcpy(messageModifiable, "");
     char messageForme[64] = "Voici le mot actualisé: "; char messageErreurs[24] = "\nNombre d'erreurs: ";
-	strcat(messageModifiable, messageForme); strcat(messageModifiable, motDevine);
-    strcat(messageModifiable, messageErreurs); strcat(messageModifiable, nberreurs);
+	strcat(messageModifiable, messageForme);
+    strcat(messageModifiable, motDevine);
+    strcat(messageModifiable, messageErreurs);
+    strcat(messageModifiable, nberreurs);
 
     return *messageModifiable;
-}
-
-char verif_mot(char *mot) {
-    if (strchr(mot, "_") != NULL){
-        return 1;
-    }
-    return 0;
 }

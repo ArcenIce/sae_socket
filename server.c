@@ -101,7 +101,6 @@ int main(int argc, char *argv[]){
 			}
 
 			*message = message_actu(&message, &motDevine, &nberreurs);
-			serverSendMessage(&socketDialogue, message);
 
 			int verif = checkStat(mot, motDevine, erreurs);
 			if (verif == 1) {
@@ -115,8 +114,9 @@ int main(int argc, char *argv[]){
 				strcat(messageFin,mot);
 				serverSendMessage(&socketDialogue, messageFin);
 				fin = 1;
-			} else {
-				serverSendMessage(&socketDialogue, "\n");
+			}
+			else{
+				serverSendMessage(&socketDialogue, message);
 			}
 
 			// On envoie des données vers le client (cf. protocole)
