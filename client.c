@@ -7,19 +7,22 @@
 #include <netinet/in.h> /* pour struct sockaddr_in */
 #include <arpa/inet.h> /* pour htons et inet_aton */
 #include <ctype.h>
+#include <string.h>
 
 #include "utils/socketUtils.c"
+#include "utils/gameUtils.c"
 
 #define LG_MESSAGE 256
 
 int main(int argc, char *argv[]){
+	
 	int descripteurSocket;
 	struct sockaddr_in sockaddrDistant;
 	socklen_t longueurAdresse;
 
 	char messageEnvoi[LG_MESSAGE]; // buffer stockant le message à envoyer
 	char messageRecu[LG_MESSAGE]; // buffer stockant le message reçur
-	int nb; /* nb d’octets écrits et lus */
+	int nb; // nb d’octets écrits et lus
 
 	char ip_dest[16];
 	int  port_dest;
@@ -69,31 +72,106 @@ int main(int argc, char *argv[]){
 		exit(-2); // On sort en indiquant un code erreur
 	}
 	printf("Connexion au serveur %s:%d réussie!\n",ip_dest,port_dest);
+	
+
 
  	// Envoi du message
 	// clientSendMessage(&descripteurSocket, messageEnvoi);
 
-	*messageRecu = clientGetMessage(&descripteurSocket);
-	int fin = 0;
-	while (fin == 0)
-	{
-		printf("Entrez une lettre à vérifier : \n");
-		scanf("%s", messageEnvoi);
-		*messageEnvoi = toupper(*messageEnvoi);
+	char player[1];
+	*player = clientGetMessage(&descripteurSocket);
+	printf("Joueur : %s\n", player);
 
-		clientSendMessage(&descripteurSocket, messageEnvoi);
+	if (strcmp(player, "1") == 0){
+		printf("Je suis joue heure 1");
+		// int waiting = 1;
+		// const int trigger = 500; // ms
+		// const int numDots = 4;
+		// const char prompt[] = "En attente du joueur 2 ";
+
+		// while (waiting == 1) {
+		// 	// Return and clear with spaces, then return and print prompt.
+		// 	printf("\r%*s\r%s", sizeof(prompt) - 1 + numDots, "", prompt);
+		// 	fflush(stdout);
+
+		// 	// Print numDots number of dots, one every trigger milliseconds.
+		// 	for (int i = 0; i < numDots; i++) {
+		// 		if (clientGetMessage(&descripteurSocket)=="J2"){
+		// 			break;
+		// 		}
+		// 		usleep(trigger * 1000);
+		// 		fputc('.', stdout);
+		// 		fflush(stdout);
+		// 	}
+		// 	waiting = 0;
+		// }
+		char mot[LG_MESSAGE];
 		*messageRecu = clientGetMessage(&descripteurSocket);
+		printf("\n");
+		printf("Entrez un mot à faire deviner :\n");
+		scanf("%s", mot);
 
-		if (strstr(messageRecu, "B") != NULL) {
-			printf("Gagné !\n");
-			fin = 1;
-		}
-		else if (strstr(messageRecu, "D") != NULL){
-			printf("Perdu, vous avez fait 6 erreurs\n");
-			fin = 1;
-		}
+		// START PARTIE
+		char lettresMot[27];
+		char motDevine[sizeof(mot)];
+		int erreurs = 0;
+		char nberreurs[2] = "0";
+		init_game(&mot, lettresMot, motDevine);
+		clientSendMessage(&descripteurSocket, motDevine);
 	}
-	close(descripteurSocket);
+
+
+	else if (strcmp(player, "2") == 0){
+		printf("Je suis joue heure d'eux");
+		// int waiting = 1;
+		// const int trigger = 500; // ms
+		// const int numDots = 4;
+		// const char prompt[] = "En attente du mot du joueur 1 ";
+
+		// while (waiting == 1) {
+		// 	// Return and clear with spaces, then return and print prompt.
+		// 	printf("\r%*s\r%s", sizeof(prompt) - 1 + numDots, "", prompt);
+		// 	fflush(stdout);
+
+		// 	// Print numDots number of dots, one every trigger milliseconds.
+		// 	for (int i = 0; i < numDots; i++) {
+		// 		usleep(trigger * 1000);
+		// 		fputc('.', stdout);
+		// 		fflush(stdout);
+		// 	}
+		// 	waiting = 0;
+		// }
+		printf("\n");
+		*messageRecu = clientGetMessage(&descripteurSocket);
+		printf("Le mot à deviner est : %s\n", messageRecu);
+	}
+
+	
+	
+
+
+
+
+	// int fin = 0;
+	// while (fin == 0)
+	// {
+	// 	printf("Entrez une lettre à vérifier : \n");
+	// 	scanf("%s", messageEnvoi);
+	// 	*messageEnvoi = toupper(*messageEnvoi);
+
+	// 	clientSendMessage(&descripteurSocket, messageEnvoi);
+	// 	*messageRecu = clientGetMessage(&descripteurSocket);
+
+	// 	if (strstr(messageRecu, "B") != NULL) {
+	// 		printf("Gagné !\n");
+	// 		fin = 1;
+	// 	}
+	// 	else if (strstr(messageRecu, "D") != NULL){
+	// 		printf("Perdu, vous avez fait 6 erreurs\n");
+	// 		fin = 1;
+	// 	}
+	// }
+	// close(descripteurSocket);
 
 	return 0;
 }
