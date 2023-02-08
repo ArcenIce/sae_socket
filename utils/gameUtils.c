@@ -73,6 +73,15 @@ int verif_erreurs(int *erreurs)
     return 0;
 }
 
+int checkStat(char *mot, char *mot_devine, int erreurs){
+    if (erreurs == 6){
+        return 2;
+    }
+    else if ((strcmp(mot, mot_devine) == 0)){
+        return 1;
+    }
+    return 0;
+}
 
 char message_debut(char *message_modifiable, char *mot, char *mot_devine) {
     strcpy(message_modifiable, "");
@@ -86,10 +95,10 @@ char message_debut(char *message_modifiable, char *mot, char *mot_devine) {
 }
 
 char message_actu(char *message_modifiable, char *mot_devine, char *nberreurs) {
-    strcpy(message_modifiable, "");
+  strcpy(message_modifiable, "");
 	char message_forme[64] = "Voici le mot actualisé: "; char message_erreurs[24] = "\nNombre d'erreurs: ";
 	strcat(message_modifiable, message_forme); strcat(message_modifiable, mot_devine);
-    strcat(message_modifiable, message_erreurs); strcat(message_modifiable, nberreurs);
+  strcat(message_modifiable, message_erreurs); strcat(message_modifiable, nberreurs);
 
-    return *message_modifiable;
+  return *message_modifiable;
 }

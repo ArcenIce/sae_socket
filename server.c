@@ -37,10 +37,10 @@ int main(int argc, char *argv[]){
 	init_game(&mot, lettres_mot, mot_devine);
 
 	// Crée un socket de communication
-	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); 
-	// Teste la valeur renvoyée par l’appel système socket() 
+	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
+	// Teste la valeur renvoyée par l’appel système socket()
 	if(socketEcoute < 0){
-		perror("socket"); // Affiche le message d’erreur 
+		perror("socket"); // Affiche le message d’erreur
 		exit(-1); // On sort en indiquant un code erreur
 	}
 	printf("Socket créée avec succès ! (%d)\n", socketEcoute); // On prépare l’adresse d’attachement locale
@@ -51,11 +51,11 @@ int main(int argc, char *argv[]){
 	memset(&pointDeRencontreLocal, 0x00, longueurAdresse); pointDeRencontreLocal.sin_family = PF_INET;
 	pointDeRencontreLocal.sin_addr.s_addr = htonl(INADDR_ANY); // attaché à toutes les interfaces locales disponibles
 	pointDeRencontreLocal.sin_port = htons(5050); // = 5000 ou plus
-	
+
 	// On demande l’attachement local de la socket
 	if((bind(socketEcoute, (struct sockaddr *)&pointDeRencontreLocal, longueurAdresse)) < 0) {
 		perror("bind");
-		exit(-2); 
+		exit(-2);
 	}
 	printf("Socket attachée avec succès !\n");
 
@@ -65,12 +65,12 @@ int main(int argc, char *argv[]){
    		exit(-3);
 	}
 	printf("Socket placée en écoute passive ...\n");
-	
-	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment ! 
+
+	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1){
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente d’une demande de connexion (quitter avec Ctrl-C)\n\n");
-		
+
 		// c’est un appel bloquant
 		socketDialogue = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
 		if (socketDialogue < 0) {
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]){
 			printf("Dommage, vous avez perdu... Le mot était %s\n",mot);
 			close(socketDialogue);
 		}
-		
+
 		// On envoie des données vers le client (cf. protocole)
 		// serverSendMessage(&socketDialogue, messageRecu);
 
@@ -124,5 +124,5 @@ int main(int argc, char *argv[]){
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);
-	return 0; 
+	return 0;
 }
