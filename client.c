@@ -6,6 +6,7 @@
 #include <string.h> /* pour memset */
 #include <netinet/in.h> /* pour struct sockaddr_in */
 #include <arpa/inet.h> /* pour htons et inet_aton */
+#include <ctype.h>
 
 #include "utils/socketUtils.c"
 
@@ -78,6 +79,7 @@ int main(int argc, char *argv[]){
 	{
 		printf("Entrez une lettre à vérifier : \n");
 		scanf("%s", messageEnvoi);
+		*messageEnvoi = toupper(*messageEnvoi);
 
 		clientSendMessage(&descripteurSocket, messageEnvoi);
 		*messageRecu = clientGetMessage(&descripteurSocket);
