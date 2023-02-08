@@ -79,10 +79,10 @@ int main(int argc, char *argv[]){
 	{
 
 		*messageRecu = clientGetMessage(&descripteurSocket);
-		if (strstr(messageRecu, "L") != NULL) {
-			fin = 1;
-			return;
-		}
+		// if (strstr(messageRecu, "L") != NULL) {
+		// 	fin = 1;
+		// 	return;
+		// }
 
 		printf("Entrez une lettre à vérifier : \n");
 		scanf("%s", messageEnvoi);
