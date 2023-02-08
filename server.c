@@ -83,39 +83,41 @@ int main(int argc, char *argv[]){
 		}
 
 		char message[512];
+		int fin = 0;
 
 		*message = message_debut(&message, &mot, &motDevine);
 
 		serverSendMessage(&socketDialogue, &message);
+		while (fin == 0)
+		{
+    		*messageRecu = serverGetMessage(&socketDialogue);
 
-    	*messageRecu = serverGetMessage(&socketDialogue);
+			if (verif_lettre(messageRecu, lettresMot) == 1) {
+				remplace_lettre(&messageRecu, &mot, motDevine);
+				printf("Mot actualisé :%s\n", motDevine);
+			} else {
+				erreurs++;
+				printf("%d", erreurs);
+				sprintf(nberreurs, "%d", erreurs);
+			}
 
-		if (verif_lettre(messageRecu, lettresMot) == 1) {
-			remplace_lettre(&messageRecu, &mot, motDevine);
-			printf("Mot actualisé :%s\n", motDevine);
-		} else {
-			erreurs++;
-			printf("%d", erreurs);
-			sprintf(nberreurs, "%d", erreurs);
+			*message = message_actu(&message, &motDevine, &nberreurs);
+
+			serverSendMessage(&socketDialogue, &message);
+
+			int verif = checkStat(mot, motDevine, erreurs);
+			if (verif == 1) {
+				printf("Bravo vous avez trouvé le mot %s\n",mot);
+				fin = 1;
+			} else if(verif == 2) {
+				printf("Dommage, vous avez perdu... Le mot était %s\n",mot);
+				fin = 1;
+			}
+
+			// On envoie des données vers le client (cf. protocole)
+			// serverSendMessage(&socketDialogue, messageRecu);
 		}
-
-		*message = message_actu(&message, &motDevine, &nberreurs);
-
-		serverSendMessage(&socketDialogue, &message);
-
-		int verif = checkStat(mot, motDevine, erreurs);
-		if (verif == 1) {
-			printf("Bravo vous avez trouvé le mot %s\n",mot);
-			close(socketDialogue);
-		} else if(verif == 2) {
-			printf("Dommage, vous avez perdu... Le mot était %s\n",mot);
-			close(socketDialogue);
-		}
-
-		// On envoie des données vers le client (cf. protocole)
-		// serverSendMessage(&socketDialogue, messageRecu);
-
-		close(socketDialogue);
+	close(socketDialogue);
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);

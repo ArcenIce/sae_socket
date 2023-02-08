@@ -73,12 +73,14 @@ int main(int argc, char *argv[]){
 	// clientSendMessage(&descripteurSocket, messageEnvoi);
 
 	*messageRecu = clientGetMessage(&descripteurSocket);
-
-	printf("Entrez une lettre à vérifier : ");
-	scanf("%c", messageEnvoi);
-	clientSendMessage(&descripteurSocket, messageEnvoi);
-	*messageRecu = clientGetMessage(&descripteurSocket);
-
+	int fin = 0;
+	while (fin == 0)
+	{
+		printf("Entrez une lettre à vérifier : ");
+		scanf("%c", messageEnvoi);
+		clientSendMessage(&descripteurSocket, messageEnvoi);
+		*messageRecu = clientGetMessage(&descripteurSocket);
+	}
 	close(descripteurSocket);
 
 	return 0;
