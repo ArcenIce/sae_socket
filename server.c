@@ -113,6 +113,8 @@ int main(int argc, char *argv[]){
 		*message = message_debut(&message, &mot, &motDevine2);
 		serverSendMessage(&socketDialogue2, &message);
 
+		sleep(1);
+
 		while (fin == 0) {
 
 			if (joueur == 2) {
