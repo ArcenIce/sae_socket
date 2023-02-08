@@ -81,12 +81,21 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-		char message_modifiable[512]; strcpy(message_modifiable, MESSAGE_MODIFIABLE);
-		char message_nblettres[150] = "Le mot fait "; char nblettres[128]; char message_suite_nblettres[34] = " lettres de long, devinez le !\n";
-		char message_forme[64] = "Voici la forme du mot: "; char message_erreurs[24] = "\nNombre d'erreurs: "; char nberreurs[2] = "0";
+		char message_modifiable[512]; 
+		strcpy(message_modifiable, MESSAGE_MODIFIABLE);
+		char message_nblettres[150] = "Le mot fait "; 
+		char nblettres[128]; 
+		char message_suite_nblettres[34] = " lettres de long, devinez le !\n";
+		char message_forme[64] = "Voici la forme du mot: "; 
+		char message_erreurs[24] = "\nNombre d'erreurs: "; 
+		char nberreurs[2] = "0";
 		sprintf(nblettres, "%zu", strlen(mot));
-		strcat(message_modifiable, message_nblettres); strcat(message_modifiable, nblettres); strcat(message_modifiable,message_suite_nblettres);
-		strcat(message_modifiable, message_forme); strcat(message_modifiable, mot_devine);
+
+		strcat(message_modifiable, message_nblettres); 
+		strcat(message_modifiable, nblettres); 
+		strcat(message_modifiable,message_suite_nblettres);
+		strcat(message_modifiable, message_forme); 
+		strcat(message_modifiable, mot_devine);
 
 		serverSendMessage(&socketDialogue, message_modifiable);
 
@@ -109,6 +118,11 @@ int main(int argc, char *argv[]){
 		strcat(message_modifiable, message_erreurs); strcat(message_modifiable, nberreurs);
 		serverSendMessage(&socketDialogue, message_modifiable);
 
+		int win = strcmp(mot_devine, mot);
+		if (win == 0){
+			printf("Bravo vous avez trouvé le mot.\n");
+		}
+		
 		// On envoie des données vers le client (cf. protocole)
 		// serverSendMessage(&socketDialogue, messageRecu);
 
