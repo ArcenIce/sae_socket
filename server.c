@@ -190,6 +190,8 @@ int main(int argc, char *argv[]){
 				}
 			}
 
+			sleep(0.5);
+
 		}
 
 		close(socketDialogue1);
