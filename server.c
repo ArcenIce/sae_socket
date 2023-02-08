@@ -170,7 +170,6 @@ int main(int argc, char *argv[]){
 				}
 
 				*message = message_actu(&message, &motDevine1, &nberreurs1);
-				serverSendMessage(&socketDialogue1, message);
 
 				int verif = checkStat(mot, motDevine1, erreurs1);
 				if (verif == 1) {
@@ -187,7 +186,7 @@ int main(int argc, char *argv[]){
 					serverSendMessage(&socketDialogue2, "Le joueur 1 a perdu, vous avez gagné\n");
 					fin = 1;
 				} else {
-					serverSendMessage(&socketDialogue1, "\n");
+					serverSendMessage(&socketDialogue1, message);
 				}
 			}
 

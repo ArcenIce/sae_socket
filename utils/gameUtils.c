@@ -52,6 +52,7 @@ void remplace_lettre(char *lettreDonnee, char *mot, char *motDevine)
 
 void init_game(char *mot, char *lettreMot, char *motDevine)
 {
+    strcpy(motDevine, "");
     for (int i = 0; i < strlen(mot); i++)
     {
 
