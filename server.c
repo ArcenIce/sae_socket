@@ -14,7 +14,6 @@
 #define PORT IPPORT_USERRESERVED // = 5000 (ports >= 5000 réservés pour usage explicite)
 
 #define LG_MESSAGE 256
-#define MESSAGE_MODIFIABLE "Actualisation...\n"
 
 //157.90.140.167
 
@@ -35,7 +34,7 @@ int main(int argc, char *argv[]){
 	char lettres_mot[27];
 	char mot_devine[sizeof(mot)];
 	int erreurs = 0;
-	init_game(&mot, &lettres_mot, &mot_devine);
+	init_game(&mot, lettres_mot, mot_devine);
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); 
@@ -81,9 +80,10 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-		char message_modifiable[512]; strcpy(message_modifiable, MESSAGE_MODIFIABLE);
+		char message_modifiable[512];
 		char message_nblettres[150] = "Le mot fait "; char nblettres[128]; char message_suite_nblettres[34] = " lettres de long, devinez le !\n";
-		char message_forme[64] = "Voici la forme du mot: "; char message_erreurs[24] = "\nNombre d'erreurs: "; char nberreurs[2] = "0";
+		char message_forme[64] = "Voici la forme du mot: "; char message_erreurs[24] = "\nNombre d'erreurs: "; char nberreurs[2];
+		sprintf(nberreurs, "%d", erreurs);
 		sprintf(nblettres, "%zu", strlen(mot));
 		strcat(message_modifiable, message_nblettres); strcat(message_modifiable, nblettres); strcat(message_modifiable,message_suite_nblettres);
 		strcat(message_modifiable, message_forme); strcat(message_modifiable, mot_devine);
@@ -92,9 +92,9 @@ int main(int argc, char *argv[]){
 
     	*messageRecu = serverGetMessage(&socketDialogue);
 
-		if (verif_lettre(&messageRecu, &lettres_mot) == 1)
+		if (verif_lettre(messageRecu, lettres_mot) == 1)
 		{
-			remplace_lettre(&messageRecu, &mot, &mot_devine);
+			remplace_lettre(&messageRecu, &mot, mot_devine);
 			printf("Mot actualisé :%s\n", mot_devine);
 		}
 		else
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]){
 			sprintf(nberreurs, "%d", erreurs);
 		}
 
-		strcpy(message_modifiable,MESSAGE_MODIFIABLE);
+		strcpy(message_modifiable,"");
 		strcat(message_modifiable, message_forme); strcat(message_modifiable, mot_devine);
 		strcat(message_modifiable, message_erreurs); strcat(message_modifiable, nberreurs);
 		serverSendMessage(&socketDialogue, message_modifiable);
