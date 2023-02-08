@@ -62,7 +62,6 @@ void init_game(char *mot, char *lettreMot, char *motDevine)
         }
         strcat(motDevine, "_");
     }
-    printf(mot);
 }
 
 int verif_erreurs(int *erreurs)
