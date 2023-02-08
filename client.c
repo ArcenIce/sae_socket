@@ -77,17 +77,19 @@ int main(int argc, char *argv[]){
 	while (fin == 0)
 	{
 		printf("Entrez une lettre à vérifier : \n");
-		scanf("%c", messageEnvoi);
-		if (strcmp(messageEnvoi,"\n") != 0){
-			clientSendMessage(&descripteurSocket, messageEnvoi);
-			*messageRecu = clientGetMessage(&descripteurSocket);
-		}
-		if (strchr(messageRecu, "_") == NULL) {
+		scanf("%s", messageEnvoi);
+
+		clientSendMessage(&descripteurSocket, messageEnvoi);
+		*messageRecu = clientGetMessage(&descripteurSocket);
+
+		*messageRecu = clientGetMessage(&descripteurSocket);
+
+		if (strchr(messageRecu, "Bravo") != NULL) {
 			printf("Gagner");
 			fin = 1;
 		}
-		else if (messageRecu == "6"){
-			printf("Perdu ");
+		else if (strchr(messageRecu, "Dommage") != NULL){
+			printf("Perdu");
 			fin = 1;
 		}
 		

@@ -61,8 +61,10 @@ char clientGetMessage(int *dialog) {
    		fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
 			return 0;
 		default: /* réception de n octets */
-		  messageRecu[nb]='\0';
-			printf("Message reçu du serveur : %s (%d octets)\n\n", messageRecu, nb);
+		  	messageRecu[nb]='\0';
+			if (strcmp(messageRecu,"\n") != 0) {
+				printf("Message reçu du serveur : %s (%d octets)\n\n", messageRecu, nb);
+			}
 	}	// On ferme la ressource avant de quitter
 
     return *messageRecu;

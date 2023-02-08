@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 	char mot[LG_MESSAGE];
 	strcpy(mot, "TABULATION");
 	char lettresMot[27];
-	char motDevine[strlen(mot)];
+	char motDevine[sizeof(mot)];
 	int erreurs = 0;
 	char nberreurs[2] = "0";
 	
@@ -86,10 +86,9 @@ int main(int argc, char *argv[]){
 		int fin = 0;
 
 		*message = message_debut(&message, &mot, &motDevine);
-
 		serverSendMessage(&socketDialogue, &message);
-		while (fin == 0)
-		{
+
+		while (fin == 0) {
     		*messageRecu = serverGetMessage(&socketDialogue);
 
 			if (verif_lettre(messageRecu, lettresMot) == 1) {
@@ -97,35 +96,33 @@ int main(int argc, char *argv[]){
 				printf("Mot actualisé :%s\n", motDevine);
 			} else {
 				erreurs++;
-				printf("%d", erreurs);
+				// printf("%d", erreurs);
 				sprintf(nberreurs, "%d", erreurs);
 			}
 
 			*message = message_actu(&message, &motDevine, &nberreurs);
-
-			serverSendMessage(&socketDialogue, &message);
+			serverSendMessage(&socketDialogue, message);
 
 			int verif = checkStat(mot, motDevine, erreurs);
 			if (verif == 1) {
-				// char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
-				// strcat(messageFin,mot);
-				serverSendMessage(&socketDialogue, mot);
+				char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
+				strcat(messageFin,mot);
+				serverSendMessage(&socketDialogue, messageFin);
 				fin = 1;
 			} 
 			else if (verif == 2) {
-				serverSendMessage(&socketDialogue, nberreurs);
+				char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
+				strcat(messageFin,mot);
+				serverSendMessage(&socketDialogue, messageFin);
+				fin = 1;
+			} else {
+				serverSendMessage(&socketDialogue, "\n");
 			}
-			// else if(verif == 2) {
-			// 	char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
-			// 	strcat(messageFin,mot);
-			// 	serverSendMessage(&socketDialogue, messageFin);
-			// 	fin = 1;
-			// }
 
 			// On envoie des données vers le client (cf. protocole)
 			// serverSendMessage(&socketDialogue, messageRecu);
 		}
-	close(socketDialogue);
+		close(socketDialogue);
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);
