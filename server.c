@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
 
 		serverSendMessage(&socketDialogue2, "Bienvenue, vous êtes le joueur 2, la partie commence maintenant.");
 
-		printf("Les deux joeurs sont connectés, on peut commencer la partie.\n");
+		printf("Les deux joueurs sont connectés, on peut commencer la partie.\n");
 
 		int joueur = 2;
 		char message[512];
@@ -154,8 +154,6 @@ int main(int argc, char *argv[]){
 				}
 
 			} else {
-
-				printf("here");
 
 				joueur = 2;
 

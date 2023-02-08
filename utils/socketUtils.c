@@ -77,8 +77,8 @@ int clientSendMessage(int *dialog, char message[]) {
 
 	switch(nb = write(*dialog, message, strlen(message))){
 		case -1 : /* une erreur ! */
-     			perror("Erreur en écriture...");
-		     	exit(-3);
+     		perror("Erreur en écriture...");
+		    exit(-3);
 		case 0 : /* la socket est fermée */
 			fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
 			return 0;
