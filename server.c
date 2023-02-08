@@ -70,6 +70,9 @@ int main(int argc, char *argv[]){
 
 	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1){
+		erreurs = 0;
+		nberreurs[2] = "0";
+		init_game(&mot, lettresMot, motDevine);
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente d’une demande de connexion (quitter avec Ctrl-C)\n\n");
 

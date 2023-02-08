@@ -90,8 +90,6 @@ int main(int argc, char *argv[]){
 			printf("Perdu, vous avez fait 6 erreurs");
 			fin = 1;
 		}
-		
-		
 	}
 	close(descripteurSocket);
 
