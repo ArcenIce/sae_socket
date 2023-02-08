@@ -72,3 +72,13 @@ int verif_erreurs(int *erreurs)
     }
     return 0;
 }
+
+int checkStat(char *mot, char *mot_devine, int erreurs){
+    if (erreurs == 6){
+        return 2;
+    }
+    else if ((strcmp(mot, mot_devine) == 0)){
+        return 1;
+    }
+    return 0;
+}
