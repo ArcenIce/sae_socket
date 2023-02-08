@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 	char mot[LG_MESSAGE];
 	strcpy(mot, "TABULATION");
 	char lettresMot[27];
-	char motDevine[LG_MESSAGE];
+	char motDevine[strlen(mot)];
 	int erreurs = 0;
 	char nberreurs[2] = "0";
 	
@@ -107,12 +107,20 @@ int main(int argc, char *argv[]){
 
 			int verif = checkStat(mot, motDevine, erreurs);
 			if (verif == 1) {
-				printf("Bravo vous avez trouvé le mot %s\n",mot);
+				// char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
+				// strcat(messageFin,mot);
+				serverSendMessage(&socketDialogue, mot);
 				fin = 1;
-			} else if(verif == 2) {
-				printf("Dommage, vous avez perdu... Le mot était %s\n",mot);
-				fin = 1;
+			} 
+			else if (verif == 2) {
+				serverSendMessage(&socketDialogue, nberreurs);
 			}
+			// else if(verif == 2) {
+			// 	char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
+			// 	strcat(messageFin,mot);
+			// 	serverSendMessage(&socketDialogue, messageFin);
+			// 	fin = 1;
+			// }
 
 			// On envoie des données vers le client (cf. protocole)
 			// serverSendMessage(&socketDialogue, messageRecu);

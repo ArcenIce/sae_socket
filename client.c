@@ -76,10 +76,22 @@ int main(int argc, char *argv[]){
 	int fin = 0;
 	while (fin == 0)
 	{
-		printf("Entrez une lettre à vérifier : ");
+		printf("Entrez une lettre à vérifier : \n");
 		scanf("%c", messageEnvoi);
-		clientSendMessage(&descripteurSocket, messageEnvoi);
-		*messageRecu = clientGetMessage(&descripteurSocket);
+		if (strcmp(messageEnvoi,"\n") != 0){
+			clientSendMessage(&descripteurSocket, messageEnvoi);
+			*messageRecu = clientGetMessage(&descripteurSocket);
+		}
+		if (strchr(messageRecu, "_") == NULL) {
+			printf("Gagner");
+			fin = 1;
+		}
+		else if (messageRecu == "6"){
+			printf("Perdu ");
+			fin = 1;
+		}
+		
+		
 	}
 	close(descripteurSocket);
 

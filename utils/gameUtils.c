@@ -102,3 +102,10 @@ char message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
 
     return *messageModifiable;
 }
+
+char verif_mot(char *mot) {
+    if (strchr(mot, "_") != NULL){
+        return 1;
+    }
+    return 0;
+}
