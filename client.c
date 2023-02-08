@@ -69,27 +69,27 @@ int main(int argc, char *argv[]){
 	}
 	printf("Connexion au serveur %s:%d réussie!\n",ip_dest,port_dest);
 
- 	// Envoi du message
-	// clientSendMessage(&descripteurSocket, messageEnvoi);
+	*messageRecu = clientGetMessage(&descripteurSocket); //Premier message pour dire d'attendre le joueur ou sinon préciser la position
 
-	*messageRecu = clientGetMessage(&descripteurSocket);
+	
+
+	*messageRecu = clientGetMessage(&descripteurSocket); //Message pour indiquer le mot
 	int fin = 0;
 	while (fin == 0)
 	{
 		printf("Entrez une lettre à vérifier : \n");
 		scanf("%s", messageEnvoi);
+		*messageEnvoi = toupper(*messageEnvoi);
 
 		clientSendMessage(&descripteurSocket, messageEnvoi);
 		*messageRecu = clientGetMessage(&descripteurSocket);
 
-		*messageRecu = clientGetMessage(&descripteurSocket);
-
 		if (strstr(messageRecu, "B") != NULL) {
-			printf("Gagner");
+			printf("Gagné !\n");
 			fin = 1;
 		}
 		else if (strstr(messageRecu, "D") != NULL){
-			printf("Perdu");
+			printf("Perdu, vous avez fait 6 erreurs\n");
 			fin = 1;
 		}
 		

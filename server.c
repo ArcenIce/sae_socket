@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in pointDeRencontreLocal;
 	socklen_t longueurAdresse;
 
-	int socketDialogue;
+	int socketDialogue1, socketDialogue2;
 	struct sockaddr_in pointDeRencontreDistant;
 	char messageRecu[LG_MESSAGE];
 	char messageEnvoi[LG_MESSAGE];
@@ -32,14 +32,10 @@ int main(int argc, char *argv[]){
 	char mot[LG_MESSAGE];
 	strcpy(mot, "TABULATION");
 	char lettresMot[27];
-	char motDevine[sizeof(mot)];
-	int erreurs = 0;
-	char nberreurs[2] = "0";
-	
-	init_game(&mot, lettresMot, motDevine);
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
+	setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, 1, sizeof(1));
 	// Teste la valeur renvoyée par l’appel système socket()
 	if(socketEcoute < 0){
 		perror("socket"); // Affiche le message d’erreur
@@ -70,59 +66,129 @@ int main(int argc, char *argv[]){
 
 	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1){
+
+		char motDevine1[sizeof(mot)];
+		int erreurs1 = 0;
+		char nberreurs1[2] = "0";
+		init_game(&mot, lettresMot, motDevine1);
+
+		char motDevine2[sizeof(mot)];
+		int erreurs2 = 0;
+		char nberreurs2[2] = "0";
+		init_game(&mot, lettresMot, motDevine2);
+
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente d’une demande de connexion (quitter avec Ctrl-C)\n\n");
 
 		// c’est un appel bloquant
-		socketDialogue = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
-		if (socketDialogue < 0) {
-   			perror("accept");
-			close(socketDialogue);
-   			close(socketEcoute);
-   			exit(-4);
+		socketDialogue1 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
+		if (socketDialogue1 < 0) {
+			perror("accept");
+			close(socketDialogue1);
+			close(socketEcoute);
+			exit(-4);
 		}
 
+		serverSendMessage(&socketDialogue1, "Bienvenue, vous êtes le joueur 1, la partie commencera quand le deuxième joueur arrivera.\n");
+
+		socketDialogue2 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
+		if (socketDialogue2 < 0) {
+			perror("accept");
+			close(socketDialogue2);
+			close(socketEcoute);
+			exit(-4);
+		}
+
+		serverSendMessage(&socketDialogue2, "Bienvenue, vous êtes le joueur 2, la partie commence maintenant.\n");
+
+		printf("Les deux joeurs sont connectés, on peut commencer la partie.\n");
+
+		int joueur = 2;
 		char message[512];
 		int fin = 0;
 
-		*message = message_debut(&message, &mot, &motDevine);
-		serverSendMessage(&socketDialogue, &message);
+		*message = message_debut(&message, &mot, &motDevine1);
+		serverSendMessage(&socketDialogue1, &message);
+
+		*message = message_debut(&message, &mot, &motDevine2);
+		serverSendMessage(&socketDialogue2, &message);
 
 		while (fin == 0) {
-    		*messageRecu = serverGetMessage(&socketDialogue);
 
-			if (verif_lettre(messageRecu, lettresMot) == 1) {
-				remplace_lettre(&messageRecu, &mot, motDevine);
-				printf("Mot actualisé :%s\n", motDevine);
+			if (joueur == 2) {
+
+				joueur = 1;
+
+				*messageRecu = serverGetMessage(&socketDialogue2);
+
+				if (verif_lettre(messageRecu, lettresMot) == 1) {
+					remplace_lettre(&messageRecu, &mot, motDevine2);
+					printf("Mot actualisé :%s\n", motDevine2);
+				} else {
+					erreurs2++;
+					sprintf(nberreurs2, "%d", erreurs2);
+				}
+
+				*message = message_actu(&message, &motDevine2, &nberreurs2);
+
+				int verif = checkStat(mot, motDevine2, erreurs2);
+				if (verif == 1) {
+					char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
+					strcat(messageFin,mot);
+					serverSendMessage(&socketDialogue2, messageFin);
+					serverSendMessage(&socketDialogue1, "Le joueur 2 a gagné, vous avez perdu\n");
+					fin = 1;
+				} 
+				else if (verif == 2) {
+					char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
+					strcat(messageFin,mot);
+					serverSendMessage(&socketDialogue2, messageFin);
+					serverSendMessage(&socketDialogue1, "Le joueur 2 a perdu, vous avez gagné\n");
+					fin = 1;
+				} else {
+					serverSendMessage(&socketDialogue2, message);
+				}
+
 			} else {
-				erreurs++;
-				// printf("%d", erreurs);
-				sprintf(nberreurs, "%d", erreurs);
+
+				joueur = 2;
+				*messageRecu = serverGetMessage(&socketDialogue1);
+
+				if (verif_lettre(messageRecu, lettresMot) == 1) {
+					remplace_lettre(&messageRecu, &mot, motDevine1);
+					printf("Mot actualisé :%s\n", motDevine1);
+				} else {
+					erreurs1++;
+					sprintf(nberreurs1, "%d", erreurs1);
+				}
+
+				*message = message_actu(&message, &motDevine1, &nberreurs1);
+				serverSendMessage(&socketDialogue1, message);
+
+				int verif = checkStat(mot, motDevine1, erreurs1);
+				if (verif == 1) {
+					char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
+					strcat(messageFin,mot);
+					serverSendMessage(&socketDialogue1, messageFin);
+					serverSendMessage(&socketDialogue2, "Le joueur 1 a gagné, vous avez perdu\n");
+					fin = 1;
+				} 
+				else if (verif == 2) {
+					char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
+					strcat(messageFin,mot);
+					serverSendMessage(&socketDialogue1, messageFin);
+					serverSendMessage(&socketDialogue2, "Le joueur 1 a perdu, vous avez gagné\n");
+					fin = 1;
+				} else {
+					serverSendMessage(&socketDialogue1, "\n");
+				}
 			}
 
-			*message = message_actu(&message, &motDevine, &nberreurs);
-			serverSendMessage(&socketDialogue, message);
-
-			int verif = checkStat(mot, motDevine, erreurs);
-			if (verif == 1) {
-				char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
-				strcat(messageFin,mot);
-				serverSendMessage(&socketDialogue, messageFin);
-				fin = 1;
-			} 
-			else if (verif == 2) {
-				char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
-				strcat(messageFin,mot);
-				serverSendMessage(&socketDialogue, messageFin);
-				fin = 1;
-			} else {
-				serverSendMessage(&socketDialogue, "\n");
-			}
-
-			// On envoie des données vers le client (cf. protocole)
-			// serverSendMessage(&socketDialogue, messageRecu);
 		}
-		close(socketDialogue);
+
+		close(socketDialogue1);
+		close(socketDialogue2);
+
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);
