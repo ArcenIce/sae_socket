@@ -34,6 +34,8 @@ int main(int argc, char *argv[]){
 	char lettres_mot[27];
 	char mot_devine[strlen(mot)];
 	int erreurs = 0;
+	char nberreurs[2] = "0";
+	
 	init_game(&mot, lettres_mot, mot_devine);
 
 	// Crée un socket de communication
@@ -80,7 +82,6 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-		char nberreurs[2];
 		char message[512];
 
 		*message = message_debut(&message, &mot, &mot_devine);
