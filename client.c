@@ -84,6 +84,10 @@ int main(int argc, char *argv[]){
 		// 	return;
 		// }
 
+		if (strcmp(messageRecu,"\n") != 0) {
+			continue;
+		}
+
 		printf("Entrez une lettre à vérifier : \n");
 		scanf("%s", messageEnvoi);
 		*messageEnvoi = toupper(*messageEnvoi);

@@ -89,7 +89,7 @@ int main(int argc, char *argv[]){
 			exit(-4);
 		}
 
-		serverSendMessage(&socketDialogue1, "Bienvenue, vous êtes le joueur 1, la partie commencera quand le deuxième joueur arrivera.\n");
+		serverSendMessage(&socketDialogue1, "Bienvenue, vous êtes le joueur 1, la partie commencera quand le deuxième joueur arrivera.");
 
 		socketDialogue2 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
 		if (socketDialogue2 < 0) {
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]){
 			exit(-4);
 		}
 
-		serverSendMessage(&socketDialogue2, "Bienvenue, vous êtes le joueur 2, la partie commence maintenant.\n");
+		serverSendMessage(&socketDialogue2, "Bienvenue, vous êtes le joueur 2, la partie commence maintenant.");
 
 		printf("Les deux joeurs sont connectés, on peut commencer la partie.\n");
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
 
 				joueur = 1;
 
-				serverSendMessage(&socketDialogue2, "C'est votre tour.\n");
+				serverSendMessage(&socketDialogue2, "C'est votre tour.");
 
 				*messageRecu = serverGetMessage(&socketDialogue2);
 
@@ -140,14 +140,14 @@ int main(int argc, char *argv[]){
 					char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
 					strcat(messageFin,mot);
 					serverSendMessage(&socketDialogue2, messageFin);
-					serverSendMessage(&socketDialogue1, "Le joueur 2 a gagné, vous avez perdu\n");
+					serverSendMessage(&socketDialogue1, "Le joueur 2 a gagné, vous avez perdu");
 					fin = 1;
 				} 
 				else if (verif == 2) {
 					char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
 					strcat(messageFin,mot);
 					serverSendMessage(&socketDialogue2, messageFin);
-					serverSendMessage(&socketDialogue1, "Le joueur 2 a perdu, vous avez gagné\n");
+					serverSendMessage(&socketDialogue1, "Le joueur 2 a perdu, vous avez gagné");
 					fin = 1;
 				} else {
 					serverSendMessage(&socketDialogue2, message);
@@ -155,9 +155,11 @@ int main(int argc, char *argv[]){
 
 			} else {
 
+				printf("here");
+
 				joueur = 2;
 
-				serverSendMessage(&socketDialogue1, "C'est votre tour.\n");
+				serverSendMessage(&socketDialogue1, "C'est votre tour.");
 
 				*messageRecu = serverGetMessage(&socketDialogue1);
 
@@ -176,21 +178,19 @@ int main(int argc, char *argv[]){
 					char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
 					strcat(messageFin,mot);
 					serverSendMessage(&socketDialogue1, messageFin);
-					serverSendMessage(&socketDialogue2, "Le joueur 1 a gagné, vous avez perdu\n");
+					serverSendMessage(&socketDialogue2, "Le joueur 1 a gagné, vous avez perdu");
 					fin = 1;
 				} 
 				else if (verif == 2) {
 					char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
 					strcat(messageFin,mot);
 					serverSendMessage(&socketDialogue1, messageFin);
-					serverSendMessage(&socketDialogue2, "Le joueur 1 a perdu, vous avez gagné\n");
+					serverSendMessage(&socketDialogue2, "Le joueur 1 a perdu, vous avez gagné");
 					fin = 1;
 				} else {
 					serverSendMessage(&socketDialogue1, message);
 				}
 			}
-
-			sleep(0.5);
 
 		}
 
