@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
 		// 	return;
 		// }
 
-		if (strcmp(messageRecu,"\n") != 0) {
+		if (strcmp(messageRecu,"\n") == 0) {
 			continue;
 		}
 
