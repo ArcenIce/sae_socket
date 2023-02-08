@@ -27,11 +27,11 @@
 //     return index;
 // }
 
-int verif_lettre(char *lettre_donnee, char *lettres_mot)
+int verif_lettre(char *lettreDonne, char *lettresMot)
 {
-    for (int i = 0; i < strlen(lettres_mot); i++)
+    for (int i = 0; i < strlen(lettresMot); i++)
     {
-        if (lettres_mot[i] == *lettre_donnee)
+        if (lettresMot[i] == *lettreDonne)
         {
             return 1;
         }
@@ -39,29 +39,30 @@ int verif_lettre(char *lettre_donnee, char *lettres_mot)
     return 0;
 }
 
-void remplace_lettre(char *lettre_donne, char *mot, char *mot_devine)
+void remplace_lettre(char *lettreDonnee, char *mot, char *motDevine)
 {
     for (int i = 0; i < strlen(mot); i++)
     {
-        if (*lettre_donne == mot[i])
+        if (*lettreDonnee == mot[i])
         {
-            mot_devine[i] = *lettre_donne;
+            motDevine[i] = *lettreDonnee;
         }
     }
 }
 
-void init_game(char *mot, char *lettre_mot, char *mot_devine)
+void init_game(char *mot, char *lettreMot, char *motDevine)
 {
     for (int i = 0; i < strlen(mot); i++)
     {
 
-        if (strchr(lettre_mot, mot[i]) == 0)
+        if (strchr(lettreMot, mot[i]) == 0)
         {
             // printf("%c", mot[i]);
-            strcat(lettre_mot, &mot[i]);
+            strcat(lettreMot, &mot[i]);
         }
-        strcat(mot_devine, "_");
+        strcat(motDevine, "_");
     }
+    printf(mot);
 }
 
 int verif_erreurs(int *erreurs)
@@ -73,32 +74,32 @@ int verif_erreurs(int *erreurs)
     return 0;
 }
 
-int checkStat(char *mot, char *mot_devine, int erreurs){
+int checkStat(char *mot, char *motDevine, int erreurs){
     if (erreurs == 6){
         return 2;
     }
-    else if ((strcmp(mot, mot_devine) == 0)){
+    else if ((strcmp(mot, motDevine) == 0)){
         return 1;
     }
     return 0;
 }
 
-char message_debut(char *message_modifiable, char *mot, char *mot_devine) {
-    strcpy(message_modifiable, "");
-	char message_nblettres[150] = "Le mot fait "; char nblettres[128]; char message_suite_nblettres[34] = " lettres de long, devinez le !\n";
-	char message_forme[64] = "Voici la forme du mot: ";
+char message_debut(char *messageModifiable, char *mot, char *motDevine) {
+    strcpy(messageModifiable, "");
+	char messageNblettres[150] = "Le mot fait "; char nblettres[128]; char messageSuiteNblettres[34] = " lettres de long, devinez le !\n";
+	char messageForme[64] = "Voici la forme du mot: ";
 	sprintf(nblettres, "%zu", strlen(mot));
-	strcat(message_modifiable, message_nblettres); strcat(message_modifiable, nblettres); strcat(message_modifiable,message_suite_nblettres);
-	strcat(message_modifiable, message_forme); strcat(message_modifiable, mot_devine);
+	strcat(messageModifiable, messageNblettres); strcat(messageModifiable, nblettres); strcat(messageModifiable,messageSuiteNblettres);
+	strcat(messageModifiable, messageForme); strcat(messageModifiable, motDevine);
 
-    return *message_modifiable;
+    return *messageModifiable;
 }
 
-char message_actu(char *message_modifiable, char *mot_devine, char *nberreurs) {
-    strcpy(message_modifiable, "");
-    char message_forme[64] = "Voici le mot actualisé: "; char message_erreurs[24] = "\nNombre d'erreurs: ";
-	strcat(message_modifiable, message_forme); strcat(message_modifiable, mot_devine);
-    strcat(message_modifiable, message_erreurs); strcat(message_modifiable, nberreurs);
+char message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
+    strcpy(messageModifiable, "");
+    char messageForme[64] = "Voici le mot actualisé: "; char messageErreurs[24] = "\nNombre d'erreurs: ";
+	strcat(messageModifiable, messageForme); strcat(messageModifiable, motDevine);
+    strcat(messageModifiable, messageErreurs); strcat(messageModifiable, nberreurs);
 
-    return *message_modifiable;
+    return *messageModifiable;
 }

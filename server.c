@@ -31,12 +31,12 @@ int main(int argc, char *argv[]){
 
 	char mot[LG_MESSAGE];
 	strcpy(mot, "TABULATION");
-	char lettres_mot[27];
-	char mot_devine[strlen(mot)];
+	char lettresMot[27];
+	char motDevine[LG_MESSAGE];
 	int erreurs = 0;
 	char nberreurs[2] = "0";
 	
-	init_game(&mot, lettres_mot, mot_devine);
+	init_game(&mot, lettresMot, motDevine);
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
@@ -84,26 +84,26 @@ int main(int argc, char *argv[]){
 
 		char message[512];
 
-		*message = message_debut(&message, &mot, &mot_devine);
+		*message = message_debut(&message, &mot, &motDevine);
 
 		serverSendMessage(&socketDialogue, &message);
 
     	*messageRecu = serverGetMessage(&socketDialogue);
 
-		if (verif_lettre(messageRecu, lettres_mot) == 1) {
-			remplace_lettre(&messageRecu, &mot, mot_devine);
-			printf("Mot actualisé :%s\n", mot_devine);
+		if (verif_lettre(messageRecu, lettresMot) == 1) {
+			remplace_lettre(&messageRecu, &mot, motDevine);
+			printf("Mot actualisé :%s\n", motDevine);
 		} else {
 			erreurs++;
 			printf("%d", erreurs);
 			sprintf(nberreurs, "%d", erreurs);
 		}
 
-		*message = message_actu(&message, &mot_devine, &nberreurs);
+		*message = message_actu(&message, &motDevine, &nberreurs);
 
 		serverSendMessage(&socketDialogue, &message);
 
-		int verif = checkStat(mot, mot_devine, erreurs);
+		int verif = checkStat(mot, motDevine, erreurs);
 		if (verif == 1) {
 			printf("Bravo vous avez trouvé le mot %s\n",mot);
 			close(socketDialogue);
