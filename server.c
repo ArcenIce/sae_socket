@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 	char mot[LG_MESSAGE];
 	strcpy(mot, "TABULATION");
 	char lettres_mot[27];
-	char mot_devine[sizeof(mot)];
+	char mot_devine[strlen(mot)];
 	int erreurs = 0;
 	init_game(&mot, lettres_mot, mot_devine);
 

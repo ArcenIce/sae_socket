@@ -73,12 +73,7 @@ int main(int argc, char *argv[]){
 	// clientSendMessage(&descripteurSocket, messageEnvoi);
 
 	*messageRecu = clientGetMessage(&descripteurSocket);
-	printf("Bienvenue sur le serveur, le jeu va débuter\n");
-	int startGame = 0;
-	while ((messageRecu != "start")&&(startGame=0))
-	{
-		startGame = 1;
-	}
+
 	printf("Entrez une lettre à vérifier : ");
 	scanf("%c", messageEnvoi);
 	clientSendMessage(&descripteurSocket, messageEnvoi);
