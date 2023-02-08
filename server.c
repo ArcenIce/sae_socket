@@ -89,13 +89,10 @@ int main(int argc, char *argv[]){
 
     	*messageRecu = serverGetMessage(&socketDialogue);
 
-		if (verif_lettre(messageRecu, lettres_mot) == 1)
-		{
+		if (verif_lettre(messageRecu, lettres_mot) == 1) {
 			remplace_lettre(&messageRecu, &mot, mot_devine);
 			printf("Mot actualisé :%s\n", mot_devine);
-		}
-		else
-		{
+		} else {
 			erreurs++;
 			printf("%d", erreurs);
 			sprintf(nberreurs, "%d", erreurs);
@@ -106,13 +103,10 @@ int main(int argc, char *argv[]){
 		serverSendMessage(&socketDialogue, &message);
 
 		int verif = checkStat(mot, mot_devine, erreurs);
-		if (verif == 1)
-		{
+		if (verif == 1) {
 			printf("Bravo vous avez trouvé le mot %s\n",mot);
 			close(socketDialogue);
-		}
-		else if(verif == 2)
-		{
+		} else if(verif == 2) {
 			printf("Dommage, vous avez perdu... Le mot était %s\n",mot);
 			close(socketDialogue);
 		}
