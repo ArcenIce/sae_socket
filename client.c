@@ -78,8 +78,8 @@ int main(int argc, char *argv[]){
  	// Envoi du message
 	// clientSendMessage(&descripteurSocket, messageEnvoi);
 
-	char player[1];
-	*player = clientGetMessage(&descripteurSocket);
+	char player[LG_MESSAGE];
+	clientGetMessage(&descripteurSocket, player);
 	printf("Joueur : %s\n", player);
 
 	if (strcmp(player, "1") == 0){
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]){
 		// 	waiting = 0;
 		// }
 		char mot[LG_MESSAGE];
-		*messageRecu = clientGetMessage(&descripteurSocket);
+		clientGetMessage(&descripteurSocket, messageRecu);
 		printf("\n");
 		printf("Entrez un mot à faire deviner :\n");
 		scanf("%s", mot);
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]){
 		// 	waiting = 0;
 		// }
 		printf("\n");
-		*messageRecu = clientGetMessage(&descripteurSocket);
+		clientGetMessage(&descripteurSocket, messageRecu);
 		printf("Le mot à deviner est : %s\n", messageRecu);
 	}
 

@@ -9,10 +9,9 @@
 
 #define LG_MESSAGE 256
 
-char serverGetMessage(int *dialog) {
+void serverGetMessage(int *dialog, char *messageRecu) {
 
     int lus;
-    char messageRecu[LG_MESSAGE];
     memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 
     lus = read(*dialog, messageRecu, LG_MESSAGE*sizeof(char)); // ici appel bloquant
@@ -22,11 +21,10 @@ char serverGetMessage(int *dialog) {
             exit(-5);
         case 0  : /* la socket est fermée */
             fprintf(stderr, "La socket a été fermée par le client !\n\n");
-            return 0;
+			return;
         default:  /* réception de n octets */
             printf("Message reçu : %s (%d octets)\n\n", messageRecu, lus);
     }
-    return *messageRecu;
 }
 
 int serverSendMessage(int *dialog, char *message) {
@@ -46,11 +44,9 @@ int serverSendMessage(int *dialog, char *message) {
 }
 
 
-char clientGetMessage(int *dialog) {
+void clientGetMessage(int *dialog, char *messageRecu) {
 
     int nb;
-    char messageRecu[LG_MESSAGE];
-
 	/* Reception des données du serveur */
 	switch(nb = read(*dialog, messageRecu, LG_MESSAGE)) {
 		case -1 : /* une erreur ! */
@@ -58,16 +54,13 @@ char clientGetMessage(int *dialog) {
 			exit(-4);
 		case 0 : /* la socket est fermée */
    		fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
-			return 0;
+		return;
 		default: /* réception de n octets */
 		  	messageRecu[nb]='\0';
 			if (strcmp(messageRecu,"\n") != 0) {
 				printf("Message reçu du serveur : %s (%d octets)\n\n", messageRecu, nb);
 			}
 	}	// On ferme la ressource avant de quitter
-
-    return *messageRecu;
-
 }
 
 int clientSendMessage(int *dialog, char message[]) {
