@@ -82,29 +82,16 @@ int main(int argc, char *argv[]){
 	clientGetMessage(&descripteurSocket, player);
 	printf("Joueur : %s\n", player);
 
-	if (strcmp(player, "1") == 0){
-		printf("Je suis joue heure 1");
-		// int waiting = 1;
-		// const int trigger = 500; // ms
-		// const int numDots = 4;
-		// const char prompt[] = "En attente du joueur 2 ";
+	if (strcmp(player, "J1") == 0){
+		int waiting = 1;
+		const int trigger = 500; // ms
+		const int numDots = 4;
+		const char prompt[] = "En attente du joueur 2\n";
 
-		// while (waiting == 1) {
-		// 	// Return and clear with spaces, then return and print prompt.
-		// 	printf("\r%*s\r%s", sizeof(prompt) - 1 + numDots, "", prompt);
-		// 	fflush(stdout);
+		// Return and clear with spaces, then return and print prompt.
+		printf("\r%*s\r%s", sizeof(prompt) - 1 + numDots, "", prompt);
+		fflush(stdout);
 
-		// 	// Print numDots number of dots, one every trigger milliseconds.
-		// 	for (int i = 0; i < numDots; i++) {
-		// 		if (clientGetMessage(&descripteurSocket)=="J2"){
-		// 			break;
-		// 		}
-		// 		usleep(trigger * 1000);
-		// 		fputc('.', stdout);
-		// 		fflush(stdout);
-		// 	}
-		// 	waiting = 0;
-		// }
 		char mot[LG_MESSAGE];
 		clientGetMessage(&descripteurSocket, messageRecu);
 		printf("\n");
@@ -121,27 +108,8 @@ int main(int argc, char *argv[]){
 	}
 
 
-	else if (strcmp(player, "2") == 0){
-		printf("Je suis joue heure d'eux");
-		// int waiting = 1;
-		// const int trigger = 500; // ms
-		// const int numDots = 4;
-		// const char prompt[] = "En attente du mot du joueur 1 ";
-
-		// while (waiting == 1) {
-		// 	// Return and clear with spaces, then return and print prompt.
-		// 	printf("\r%*s\r%s", sizeof(prompt) - 1 + numDots, "", prompt);
-		// 	fflush(stdout);
-
-		// 	// Print numDots number of dots, one every trigger milliseconds.
-		// 	for (int i = 0; i < numDots; i++) {
-		// 		usleep(trigger * 1000);
-		// 		fputc('.', stdout);
-		// 		fflush(stdout);
-		// 	}
-		// 	waiting = 0;
-		// }
-		printf("\n");
+	else if (strcmp(player, "J2") == 0){
+		printf("En attente du mot du Joueur 1\n");
 		clientGetMessage(&descripteurSocket, messageRecu);
 		printf("Le mot à deviner est : %s\n", messageRecu);
 	}

@@ -86,7 +86,7 @@ int main(int argc, char *argv[]){
    			close(socketEcoute);
    			exit(-4);
 		}
-		serverSendMessage(&socketJoueur1, "1");
+		serverSendMessage(&socketJoueur1, "J1");
 		socketJoueur2 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
 		if (socketJoueur2 < 0)
 		{
@@ -95,8 +95,8 @@ int main(int argc, char *argv[]){
 			close(socketEcoute);
 			exit(-4);
 		}
-		serverSendMessage(&socketJoueur2, "2");
-		serverSendMessage(&socketJoueur1, "2");
+		serverSendMessage(&socketJoueur2, "J2");
+		serverSendMessage(&socketJoueur1, "J2");
 
 		int fin = 0;
 
