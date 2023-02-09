@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
 		close(descripteurSocket);
 		exit(-2); // On sort en indiquant un code erreur
 	}
-	printf("Connexion au serveur %s:%d réussie!\n",ip_dest,port_dest);
+	printf("Connexion au serveur %s:%d réussie!\n\n",ip_dest,port_dest);
 	
 
 
@@ -89,24 +89,23 @@ int main(int argc, char *argv[]){
 		const char prompt[] = "En attente du joueur 2";
 
 		// Return and clear with spaces, then return and print prompt.
-		printf("\r%*s\r%s\n", sizeof(prompt) - 1 + numDots, "", prompt);
+		printf("%s\n", prompt);
 
-		char mot[LG_MESSAGE];
+		char mot[150];
 		clientGetMessage(&descripteurSocket, messageRecu);
-		printf("\n");
-		printf("Entrez un mot à faire deviner :\n");
+		printf("\nEntrez un mot à faire deviner :\n");
 		scanf("%s", mot);
 		for (int i = 0; i<sizeof(mot); i++){
 			mot[i] = toupper(mot[i]);
 		}
-		printf("Le mot a deviner est : %s\n", mot);
+		printf("Le mot a deviner est : %s\n\n", mot);
 
 		// START PARTIE
 		char lettresMot[27];
 		char motDevine[sizeof(mot)];
 		int erreurs = 0;
 		char nberreurs[2] = "0";
-		init_game(&mot, lettresMot, motDevine);
+		init_game(mot, lettresMot, motDevine);
 		clientSendMessage(&descripteurSocket, motDevine);
 		int fin = 0;
 		char lettre[LG_MESSAGE];
@@ -114,7 +113,7 @@ int main(int argc, char *argv[]){
 		while (fin == 0)
 		{
 			clientGetMessage(&descripteurSocket, lettre);
-			printf("Le Joueur 2 a envoyé la lettre %s\n", lettre);
+			printf("\nLe Joueur 2 a envoyé la lettre %s\n", lettre);
 			if (verif_lettre(lettre, lettresMot) == 1){
 				remplace_lettre(lettre, mot, motDevine);
 			}
@@ -125,7 +124,7 @@ int main(int argc, char *argv[]){
 			int stat = checkStat(mot, motDevine, erreurs);
 			if (stat == 0){
 				message_actu(messageEnvoi, motDevine, nberreurs);
-				printf("%s", messageEnvoi);
+				printf("Actualisation du message : %s\n", messageEnvoi);
 				clientSendMessage(&descripteurSocket, messageEnvoi);
 			}
 			else if (stat == 1){
@@ -135,7 +134,7 @@ int main(int argc, char *argv[]){
 				fin = 1;
 			}
 			else if (stat == 2){
-				printf("Le Joueur 2 a perdu !");
+				printf("Le Joueur 2 a perdu !\n");
 				sprintf(messageEnvoi, "Fin de la partie !\nVous n'avez pas trouvé le mot %s !", mot);
 				clientSendMessage(&descripteurSocket, messageEnvoi);
 				fin = 1;
@@ -151,7 +150,16 @@ int main(int argc, char *argv[]){
 		printf("Le mot à deviner est : %s\n", messageRecu);
 		int fin = 0;
 		char lettre[LG_MESSAGE];
+		int start = 1;
 		while (fin == 0){
+			if (start != 1){
+				printf("Mot actualisé : %s\n\n", messageRecu);
+			}
+			else{
+				start = 0;
+				printf("\n");
+			}
+			
 			printf("Entrez un lettre :\n");
 			scanf("%s", lettre);
 			*lettre = toupper(lettre[0]);

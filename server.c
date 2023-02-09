@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
 	int erreurs = 0;
 	char nberreurs[2] = "0";
 	
-	init_game(&mot, lettresMot, motDevine);
+	init_game(mot, lettresMot, motDevine);
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
@@ -73,8 +73,9 @@ int main(int argc, char *argv[]){
 	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1){
 		erreurs = 0;
-		nberreurs[2] = "0";
-		init_game(&mot, lettresMot, motDevine);
+		nberreurs[2] = '0';
+		char lettresMot[27];
+		init_game(mot, lettresMot, motDevine);
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente des demandes de connexion (quitter avec Ctrl-C)\n\n");
 
@@ -101,16 +102,16 @@ int main(int argc, char *argv[]){
 		int fin = 0;
 
 		serverGetMessage(&socketJoueur1, messageJ2);
-		printf("s : %s\n", &messageJ2);
+		printf("s : %s\n", messageJ2);
 
-		serverSendMessage(&socketJoueur2, &messageJ2);
+		serverSendMessage(&socketJoueur2, messageJ2);
 
 		while (fin == 0) {
     		serverGetMessage(&socketJoueur2, messageJ1);
-			serverSendMessage(&socketJoueur1, &messageJ1);
+			serverSendMessage(&socketJoueur1, messageJ1);
 
 			serverGetMessage(&socketJoueur1, messageJ2);
-			serverSendMessage(&socketJoueur2, &messageJ2);
+			serverSendMessage(&socketJoueur2, messageJ2);
 			if (strstr(messageJ2,"Fin de la partie !") != NULL){
 				fin = 1;
 			}

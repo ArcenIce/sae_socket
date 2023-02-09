@@ -94,7 +94,8 @@ int messageLettre(char *messageModifiable, char *lettre)
 
 void message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
     strcpy(messageModifiable, "");
-    char messageForme[64] = "Voici le mot actualisé: "; char messageErreurs[24] = "\nNombre d'erreurs: ";
+    // char messageForme[64] = "Voici le mot actualisé: ";
+    char messageForme[64] = ""; char messageErreurs[24] = "\nNombre d'erreurs: ";
 	strcat(messageModifiable, messageForme);
     strcat(messageModifiable, motDevine);
     strcat(messageModifiable, messageErreurs);
