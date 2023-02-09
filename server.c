@@ -40,8 +40,10 @@ int main(int argc, char *argv[]){
 	
 	init_game(mot, lettresMot, motDevine);
 
+	int option = 1;
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
+	setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
 	// Teste la valeur renvoyée par l’appel système socket()
 	if(socketEcoute < 0){
 		perror("socket"); // Affiche le message d’erreur
@@ -96,29 +98,32 @@ int main(int argc, char *argv[]){
 			close(socketEcoute);
 			exit(-4);
 		}
-		serverSendMessage(&socketJoueur2, "J2");
-		serverSendMessage(&socketJoueur1, "J2");
-
-		int fin = 0;
-
-		serverGetMessage(&socketJoueur1, messageJ2);
-		printf("s : %s\n", messageJ2);
-
-		serverSendMessage(&socketJoueur2, messageJ2);
-
-		while (fin == 0) {
-    		serverGetMessage(&socketJoueur2, messageJ1);
-			serverSendMessage(&socketJoueur1, messageJ1);
+		if(fork()){
+			serverSendMessage(&socketJoueur2, "J2");
+			serverSendMessage(&socketJoueur1, "J2");
+			int fin = 0;
 
 			serverGetMessage(&socketJoueur1, messageJ2);
+			printf("s : %s\n", messageJ2);
+
 			serverSendMessage(&socketJoueur2, messageJ2);
-			if (strstr(messageJ2,"Fin de la partie !") != NULL){
-				fin = 1;
+
+			while (fin == 0) {
+				serverGetMessage(&socketJoueur2, messageJ1);
+				serverSendMessage(&socketJoueur1, messageJ1);
+
+				serverGetMessage(&socketJoueur1, messageJ2);
+				serverSendMessage(&socketJoueur2, messageJ2);
+				if (strstr(messageJ2,"Fin de la partie !") != NULL){
+					fin = 1;
+				}
 			}
+			close(socketJoueur1);
+			close(socketJoueur2);
+		
+		// On ferme la ressource avant de quitter
+		close(socketEcoute);
+		return 0;
 		}
-		close(socketJoueur1);
 	}
-	// On ferme la ressource avant de quitter
-   	close(socketEcoute);
-	return 0;
 }
