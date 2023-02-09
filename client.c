@@ -112,7 +112,7 @@ int main(int argc, char *argv[]){
 		{
 			clientGetMessage(&descripteurSocket, lettre);
 			printf("Le Joueur 2 a envoyé la lettre %s", lettre);
-			fin = 1;
+			// fin = 1;
 
 		}
 		
@@ -130,7 +130,8 @@ int main(int argc, char *argv[]){
 			scanf("%s", lettre);
 			*lettre = toupper(lettre[0]);
 			clientSendMessage(&descripteurSocket, lettre);
-			fin = 1;
+			clientGetMessage(&descripteurSocket, messageRecu);
+			// fin = 1;
 		}
 	}
 

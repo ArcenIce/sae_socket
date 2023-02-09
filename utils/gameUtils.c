@@ -65,15 +65,6 @@ void init_game(char *mot, char *lettreMot, char *motDevine)
     }
 }
 
-int verif_erreurs(int *erreurs)
-{
-    if(*erreurs == 6)
-    {
-        return 1;
-    }
-    return 0;
-}
-
 int checkStat(char *mot, char *motDevine, int erreurs){
     if (erreurs == 6){
         return 2;
