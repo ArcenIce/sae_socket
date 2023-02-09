@@ -89,14 +89,14 @@ int main(int argc, char *argv[]){
 		const char prompt[] = "En attente du joueur 2\n";
 
 		// Return and clear with spaces, then return and print prompt.
-		printf("\r%*s\r%s", sizeof(prompt) - 1 + numDots, "", prompt);
-		fflush(stdout);
+		printf("\r%*s\r%s\n", sizeof(prompt) - 1 + numDots, "", prompt);
 
 		char mot[LG_MESSAGE];
 		clientGetMessage(&descripteurSocket, messageRecu);
 		printf("\n");
 		printf("Entrez un mot à faire deviner :\n");
 		scanf("%s", mot);
+		*mot = toupper(*mot);
 
 		// START PARTIE
 		char lettresMot[27];
@@ -105,6 +105,17 @@ int main(int argc, char *argv[]){
 		char nberreurs[2] = "0";
 		init_game(&mot, lettresMot, motDevine);
 		clientSendMessage(&descripteurSocket, motDevine);
+		int fin = 0;
+		char lettre[LG_MESSAGE];
+
+		while (fin == 0)
+		{
+			clientGetMessage(&descripteurSocket, lettre);
+			printf("Le Joueur 2 a envoyé la lettre %s", lettre);
+			fin = 1;
+
+		}
+		
 	}
 
 
@@ -112,6 +123,15 @@ int main(int argc, char *argv[]){
 		printf("En attente du mot du Joueur 1\n");
 		clientGetMessage(&descripteurSocket, messageRecu);
 		printf("Le mot à deviner est : %s\n", messageRecu);
+		int fin = 0;
+		char lettre[LG_MESSAGE];
+		while (fin == 0){
+			printf("Entrez un lettre :\n");
+			scanf("%s", lettre);
+			*lettre = toupper(lettre[0]);
+			clientSendMessage(&descripteurSocket, lettre);
+			fin = 1;
+		}
 	}
 
 	
