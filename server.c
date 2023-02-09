@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
 	printf("Socket attachée avec succès !\n");
 
 	// On fixe la taille de la file d’attente à 5 (pour les demandes de connexion non encore traitées)
-	if(listen(socketEcoute, 2) < 0){
+	if(listen(socketEcoute, 5) < 0){
    		perror("listen");
    		exit(-3);
 	}
