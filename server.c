@@ -106,36 +106,14 @@ int main(int argc, char *argv[]){
 		serverSendMessage(&socketJoueur2, &messageJ2);
 
 		while (fin == 0) {
-    		serverGetMessage(&socketJoueur1, messageRecu);
+    		serverGetMessage(&socketJoueur2, messageJ1);
+			serverSendMessage(&socketJoueur1, &messageJ1);
 
-			if (verif_lettre(messageRecu, lettresMot) == 1) {
-				remplace_lettre(&messageRecu, &mot, motDevine);
-				printf("Mot actualisé :%s\n", motDevine);
-			} else {
-				erreurs++;
-				// printf("%d", erreurs);
-				sprintf(nberreurs, "%d", erreurs);
-			}
-
-			int verif = checkStat(mot, motDevine, erreurs);
-			if (verif == 1) {
-				char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
-				strcat(messageFin,mot);
-				serverSendMessage(&socketJoueur1, messageFin);
-				fin = 1;
-			} 
-			else if (verif == 2) {
-				char messageFin[512] = "Dommage vous avez perdu... Le mot était : ";
-				strcat(messageFin,mot);
-				serverSendMessage(&socketJoueur1, messageFin);
+			serverGetMessage(&socketJoueur1, messageJ2);
+			serverSendMessage(&socketJoueur2, &messageJ2);
+			if (strchr(messageJ2,"Fin") == 0){
 				fin = 1;
 			}
-			else{
-				serverSendMessage(&socketJoueur1, messageJ1);
-			}
-
-			// On envoie des données vers le client (cf. protocole)
-			// serverSendMessage(&socketJoueur1, messageRecu);
 		}
 		close(socketJoueur1);
 	}
