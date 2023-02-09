@@ -157,7 +157,7 @@ int main(int argc, char *argv[]){
 			*lettre = toupper(lettre[0]);
 			clientSendMessage(&descripteurSocket, lettre);
 			clientGetMessage(&descripteurSocket, messageRecu);
-			if (strchr(messageRecu, "Fin de la partie") == 0)
+			if (strstr(messageRecu, "Fin de la partie") != NULL)
 			{
 				fin = 1;
 			}
