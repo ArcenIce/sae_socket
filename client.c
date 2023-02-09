@@ -86,7 +86,7 @@ int main(int argc, char *argv[]){
 		int waiting = 1;
 		const int trigger = 500; // ms
 		const int numDots = 4;
-		const char prompt[] = "En attente du joueur 2\n";
+		const char prompt[] = "En attente du joueur 2";
 
 		// Return and clear with spaces, then return and print prompt.
 		printf("\r%*s\r%s\n", sizeof(prompt) - 1 + numDots, "", prompt);
@@ -99,7 +99,6 @@ int main(int argc, char *argv[]){
 		for (int i = 0; i<sizeof(mot); i++){
 			mot[i] = toupper(mot[i]);
 		}
-
 		printf("Le mot a deviner est : %s\n", mot);
 
 		// START PARTIE
@@ -130,7 +129,7 @@ int main(int argc, char *argv[]){
 				clientSendMessage(&descripteurSocket, messageEnvoi);
 			}
 			else if (stat == 1){
-				printf("Le Joueur 2 a trouvé le mot !");
+				printf("Le Joueur 2 a trouvé le mot !\n");
 				sprintf(messageEnvoi, "Fin de la partie !\nVous avez trouvé le mot %s !", mot);
 				clientSendMessage(&descripteurSocket, messageEnvoi);
 				fin = 1;
@@ -141,9 +140,6 @@ int main(int argc, char *argv[]){
 				clientSendMessage(&descripteurSocket, messageEnvoi);
 				fin = 1;
 			}
-			
-			// fin = 1;
-
 		}
 		
 	}

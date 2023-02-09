@@ -111,7 +111,7 @@ int main(int argc, char *argv[]){
 
 			serverGetMessage(&socketJoueur1, messageJ2);
 			serverSendMessage(&socketJoueur2, &messageJ2);
-			if (strchr(messageJ2,"Fin de la partie") == 0){
+			if (strcmp(messageJ2,"Fin de la partie !") == 0){
 				fin = 1;
 			}
 		}
