@@ -164,12 +164,6 @@ int main(int argc, char *argv[]){
 		}
 	}
 
-	
-	
-
-
-
-
 	// int fin = 0;
 	// while (fin == 0)
 	// {
