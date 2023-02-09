@@ -111,8 +111,34 @@ int main(int argc, char *argv[]){
 		while (fin == 0)
 		{
 			clientGetMessage(&descripteurSocket, lettre);
-			printf("Le Joueur 2 a envoyé la lettre %s", lettre);
-			fin = 1;
+			printf("Le Joueur 2 a envoyé la lettre %s\n", lettre);
+			if (verif_lettre(lettre, lettresMot) == 1){
+				remplace_lettre(lettre, mot, motDevine);
+			}
+			else{
+				erreurs++;
+				sprintf(nberreurs, "%d", erreurs);
+			}
+			int stat = checkStat(mot, motDevine, erreurs);
+			if (stat == 0){
+				message_actu(messageEnvoi, motDevine, nberreurs);
+				printf("%s", messageEnvoi);
+				clientSendMessage(&descripteurSocket, messageEnvoi);
+			}
+			else if (stat == 1){
+				printf("Le Joueur 2 a trouvé le mot !");
+				sprintf(messageEnvoi, "Fin de la partie !\nVous avez trouvé le mot %s !", mot);
+				clientSendMessage(&descripteurSocket, messageEnvoi);
+				fin = 1;
+			}
+			else if (stat == 2){
+				printf("Le Joueur 2 a perdu !");
+				sprintf(messageEnvoi, "Fin de la partie !\nVous n'avez pas trouvé le mot %s !", mot);
+				clientSendMessage(&descripteurSocket, messageEnvoi);
+				fin = 1;
+			}
+			
+			// fin = 1;
 
 		}
 		
@@ -130,7 +156,8 @@ int main(int argc, char *argv[]){
 			scanf("%s", lettre);
 			*lettre = toupper(lettre[0]);
 			clientSendMessage(&descripteurSocket, lettre);
-			fin = 1;
+			clientGetMessage(&descripteurSocket, messageRecu);
+			// fin = 1;
 		}
 	}
 

@@ -101,13 +101,11 @@ int messageLettre(char *messageModifiable, char *lettre)
     return *messageModifiable;
 }
 
-char message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
+void message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
     strcpy(messageModifiable, "");
     char messageForme[64] = "Voici le mot actualisé: "; char messageErreurs[24] = "\nNombre d'erreurs: ";
 	strcat(messageModifiable, messageForme);
     strcat(messageModifiable, motDevine);
     strcat(messageModifiable, messageErreurs);
     strcat(messageModifiable, nberreurs);
-
-    return *messageModifiable;
 }
