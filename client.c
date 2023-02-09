@@ -167,6 +167,7 @@ int main(int argc, char *argv[]){
 			clientGetMessage(&descripteurSocket, messageRecu);
 			if (strstr(messageRecu, "Fin de la partie") != NULL)
 			{
+				printf("%s\n", messageRecu);
 				fin = 1;
 			}
 		}
