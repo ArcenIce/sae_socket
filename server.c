@@ -40,8 +40,10 @@ int main(int argc, char *argv[]){
 	
 	init_game(mot, lettresMot, motDevine);
 
+	int option = 1;
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
+	setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
 	// Teste la valeur renvoyée par l’appel système socket()
 	if(socketEcoute < 0){
 		perror("socket"); // Affiche le message d’erreur
