@@ -96,7 +96,10 @@ int main(int argc, char *argv[]){
 		printf("\n");
 		printf("Entrez un mot à faire deviner :\n");
 		scanf("%s", mot);
-		*mot = toupper(*mot);
+		for (int i = 0; i<sizeof(mot); i++){
+			mot[i] = toupper(mot);
+		}
+		printf("Le mot a deviner est : %s\n", mot);
 
 		// START PARTIE
 		char lettresMot[27];
