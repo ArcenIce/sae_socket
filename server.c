@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in pointDeRencontreDistant;
 	char messageRecu[LG_MESSAGE];
 	char messageJ1[LG_MESSAGE];
-	char messageJ2[LG_MESSAGE];
+	//char messageJ2[LG_MESSAGE];
 	int retour;
 
 	char mot[LG_MESSAGE];
@@ -100,7 +100,8 @@ int main(int argc, char *argv[]){
 
 		int fin = 0;
 
-		*messageJ2 = serverGetMessage(&socketJoueur1);
+		char messageJ2 = serverGetMessage(&socketJoueur1);
+		printf("s : %s\n", &messageJ2);
 
 		serverSendMessage(&socketJoueur2, &messageJ2);
 

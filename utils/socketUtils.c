@@ -27,7 +27,6 @@ char serverGetMessage(int *dialog) {
             printf("Message reçu : %s (%d octets)\n\n", messageRecu, lus);
     }
     return *messageRecu;
-
 }
 
 int serverSendMessage(int *dialog, char *message) {
