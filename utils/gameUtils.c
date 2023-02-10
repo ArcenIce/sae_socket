@@ -10,81 +10,52 @@
 
 #define ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-// int strinstr(char *cs, char *ct)
-// {
-//     int index = -1;
-
-//     if (cs != NULL && ct != NULL)
-//     {
-//         char *ptr_pos = NULL;
-
-//         ptr_pos = strstr(&cs, &ct);
-//         if (ptr_pos != NULL)
-//         {
-//             index = ptr_pos - cs;
-//         }
-//     }
-//     return index;
-// }
-
-int verif_lettre(char *lettreDonne, char *lettresMot)
-{
-    for (int i = 0; i < strlen(lettresMot); i++)
-    {
-        if (lettresMot[i] == *lettreDonne)
-        {
+int verif_lettre(char *lettreDonne, char *lettresMot) { //Lettre dans le mot ?
+    for (int i = 0; i < strlen(lettresMot); i++) {
+        if (lettresMot[i] == *lettreDonne) {
             return 1;
         }
     }
     return 0;
 }
 
-void remplace_lettre(char *lettreDonnee, char *mot, char *motDevine)
-{
-    for (int i = 0; i < strlen(mot); i++)
-    {
-        if (*lettreDonnee == mot[i])
-        {
+void remplace_lettre(char *lettreDonnee, char *mot, char *motDevine) { //Remplace les tirets
+    for (int i = 0; i < strlen(mot); i++) {
+        if (*lettreDonnee == mot[i]) {
             motDevine[i] = *lettreDonnee;
         }
     }
 }
 
-void init_game(char *mot, char *lettreMot, char *motDevine)
-{
+void init_game(char *mot, char *lettreMot, char *motDevine) { //Initialise le jeu
     strcpy(motDevine, "");
-    for (int i = 0; i < strlen(mot); i++)
-    {
-
-        if (strchr(lettreMot, mot[i]) == 0)
-        {
-            // printf("%c", mot[i]);
+    for (int i = 0; i < strlen(mot); i++) {
+        if (strchr(lettreMot, mot[i]) == 0) {
             strcat(lettreMot, &mot[i]);
         }
         strcat(motDevine, "_");
     }
 }
 
-int verif_erreurs(int *erreurs)
-{
-    if(*erreurs == 6)
-    {
+int verif_erreurs(int *erreurs) { //Check si perdu
+    if(*erreurs == 6) {
         return 1;
     }
     return 0;
 }
 
-int checkStat(char *mot, char *motDevine, int erreurs){
-    if (erreurs == 6){
+int checkStat(char *mot, char *motDevine, int erreurs) { //Check si gagné ou perdu ou rien
+    if (erreurs == 6) {
         return 2;
     }
-    else if ((strcmp(mot, motDevine) == 0)){
+    else if ((strcmp(mot, motDevine) == 0)) {
         return 1;
     }
     return 0;
 }
 
-char message_debut(char *messageModifiable, char *mot, char *motDevine) {
+char message_debut(char *messageModifiable, char *mot, char *motDevine) { //Fonction pour générer la chaine de caractères du message de début
+
     strcpy(messageModifiable, "");
 	char messageNblettres[150] = "Le mot fait \033[1m"; char nblettres[128]; char messageSuiteNblettres[34] = "\033[0m lettres de long, devinez le !";
 	char messageForme[64] = "\nVoici la forme du mot: ";
@@ -95,18 +66,14 @@ char message_debut(char *messageModifiable, char *mot, char *motDevine) {
     return *messageModifiable;
 }
 
-char message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
+char message_actu(char *messageModifiable, char *motDevine, char *nberreurs) { //Fonction pour générer la chaine de caractères du message de début
+
     strcpy(messageModifiable, "");
     char messageForme[64] = "Voici le mot actualisé: "; char messageErreurs[24] = "\nNombre d'erreurs: ";
-	strcat(messageModifiable, messageForme); strcat(messageModifiable, motDevine);
-    strcat(messageModifiable, messageErreurs); strcat(messageModifiable, nberreurs);
+	strcat(messageModifiable, messageForme);
+    strcat(messageModifiable, motDevine);
+    strcat(messageModifiable, messageErreurs);
+    strcat(messageModifiable, nberreurs);
 
     return *messageModifiable;
-}
-
-char verif_mot(char *mot) {
-    if (strchr(mot, '_') != NULL){
-        return 1;
-    }
-    return 0;
 }
