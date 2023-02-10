@@ -67,6 +67,10 @@ Même principe que la version 2 mais le serveur doit mettre directement les 2 jo
 Ce mécanisme doit du coup permettre au serveur d’être perpétuellement en attente de nouvelles
 parties.
 
+<p align="center">
+  <img src="https://cdn.discordapp.com/attachments/1072527874462072833/1073544855009112184/image.png">
+</p>
+
 
 ## L'équipe
 
