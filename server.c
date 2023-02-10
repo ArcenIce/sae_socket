@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
 	int tourne = 1;
 
 	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
-	while(tourne == 1){
+	while(1){
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente des demandes de connexion (quitter avec Ctrl-C)\n\n");
 
