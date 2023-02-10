@@ -10,6 +10,7 @@
 
 #define ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+// vérification de si la lettre est dans le mot
 int verif_lettre(char *lettreDonne, char *lettresMot)
 {
     for (int i = 0; i < strlen(lettresMot); i++)
@@ -22,6 +23,7 @@ int verif_lettre(char *lettreDonne, char *lettresMot)
     return 0;
 }
 
+// Remplace les tirets
 void remplace_lettre(char *lettreDonnee, char *mot, char *motDevine)
 {
     for (int i = 0; i < strlen(mot); i++)
@@ -33,6 +35,7 @@ void remplace_lettre(char *lettreDonnee, char *mot, char *motDevine)
     }
 }
 
+// Initialise le jeu
 void init_game(char *mot, char *lettreMot, char *motDevine)
 {
     strcpy(motDevine, "");
@@ -41,12 +44,14 @@ void init_game(char *mot, char *lettreMot, char *motDevine)
 
         if (strchr(lettreMot, mot[i]) == 0)
         {
+            // printf("%c", mot[i]);
             strcat(lettreMot, &mot[i]);
         }
         strcat(motDevine, "_");
     }
 }
 
+// Check si gagné ou perdu ou en cours
 int checkStat(char *mot, char *motDevine, int erreurs){
     if (erreurs == 6){
         return 2;
@@ -57,6 +62,7 @@ int checkStat(char *mot, char *motDevine, int erreurs){
     return 0;
 }
 
+// Fonction pour générer la chaine de caractères du message de début
 char message_debut(char *messageModifiable, char *mot, char *motDevine) {
     strcpy(messageModifiable, "Le mot fait \033[1m");
     char nblettres[128]; char messageSuiteNblettres[34] = "\033[0m lettres de long, devinez le !";
@@ -67,6 +73,7 @@ char message_debut(char *messageModifiable, char *mot, char *motDevine) {
     return *messageModifiable;
 }
 
+// Fonction pour générer la chaine de caractères du message de début
 void message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
     strcpy(messageModifiable, "");
     char messageForme[64] = ""; char messageErreurs[24] = "\nNombre d'erreurs: ";
