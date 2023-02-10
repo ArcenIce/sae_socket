@@ -75,7 +75,7 @@ int main(int argc, char *argv[]){
 		printf("Attente des demandes de connexion (quitter avec Ctrl-C)\n\n");
 
 		// c’est un appel bloquant
-		// Connexion au joueur 1
+		// Attente du joueur 1
 		socketJoueur1 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
 		if (socketJoueur1 < 0) {
    			perror("accept");
@@ -85,6 +85,7 @@ int main(int argc, char *argv[]){
 		}
 		// Une fois connecté on envoie J1 au joueur 1 pour qu'il affiche le message d'attente
 		serverSendMessage(&socketJoueur1, "J1");
+		// Attente du joueur 1
 		socketJoueur2 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
 		if (socketJoueur2 < 0)
 		{
@@ -104,7 +105,7 @@ int main(int argc, char *argv[]){
 
 		// On attend le mot à deviner du joueur 1 (ex: ______ pour COUCOU)
 		serverGetMessage(&socketJoueur1, messageJ2);
-		// On envois ce mot au joueur 2
+		// On envoie ce mot au joueur 2
 		serverSendMessage(&socketJoueur2, messageJ2);
 
 		// Boucle de jeu
