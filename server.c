@@ -36,10 +36,12 @@ int main(int argc, char *argv[]){
 	int erreurs = 0;
 	char nberreurs[2] = "0";
 	
-	init_game(&mot, lettresMot, motDevine);
+	init_game(mot, lettresMot, motDevine);
 
 	// Crée un socket de communication
+	int option = 1;
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
+	setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
 	// Teste la valeur renvoyée par l’appel système socket()
 	if(socketEcoute < 0){
 		perror("socket"); // Affiche le message d’erreur
@@ -71,8 +73,8 @@ int main(int argc, char *argv[]){
 	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1){
 		erreurs = 0;
-		nberreurs[2] = "0";
-		init_game(&mot, lettresMot, motDevine);
+		nberreurs[2] = '0';
+		init_game(mot, lettresMot, motDevine);
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente d’une demande de connexion (quitter avec Ctrl-C)\n\n");
 
@@ -88,14 +90,14 @@ int main(int argc, char *argv[]){
 		char message[512];
 		int fin = 0;
 
-		*message = message_debut(&message, &mot, &motDevine);
-		serverSendMessage(&socketDialogue, &message);
+		*message = message_debut(message, mot, motDevine);
+		serverSendMessage(&socketDialogue, message);
 
 		while (fin == 0) {
     		*messageRecu = serverGetMessage(&socketDialogue);
 
 			if (verif_lettre(messageRecu, lettresMot) == 1) {
-				remplace_lettre(&messageRecu, &mot, motDevine);
+				remplace_lettre(messageRecu, mot, motDevine);
 				printf("Mot actualisé :%s\n", motDevine);
 			} else {
 				erreurs++;
@@ -103,7 +105,7 @@ int main(int argc, char *argv[]){
 				sprintf(nberreurs, "%d", erreurs);
 			}
 
-			*message = message_actu(&message, &motDevine, &nberreurs);
+			*message = message_actu(message, motDevine, nberreurs);
 
 			int verif = checkStat(mot, motDevine, erreurs);
 			if (verif == 1) {
