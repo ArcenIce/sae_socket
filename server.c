@@ -31,15 +31,6 @@ int main(int argc, char *argv[]){
 	char messageJ2[LG_MESSAGE];
 	int retour;
 
-	char mot[LG_MESSAGE];
-	strcpy(mot, "TABULATION");
-	char lettresMot[27];
-	char motDevine[sizeof(mot)];
-	int erreurs = 0;
-	char nberreurs[2] = "0";
-	
-	init_game(mot, lettresMot, motDevine);
-
 	int option = 1;
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
@@ -51,12 +42,15 @@ int main(int argc, char *argv[]){
 	}
 	printf("Socket créée avec succès ! (%d)\n", socketEcoute); // On prépare l’adresse d’attachement locale
 
+
 	// Remplissage de sockaddrDistant (structure sockaddr_in identifiant le point d'écoute local)
 	longueurAdresse = sizeof(pointDeRencontreLocal);
 
 	memset(&pointDeRencontreLocal, 0x00, longueurAdresse); pointDeRencontreLocal.sin_family = PF_INET;
 	pointDeRencontreLocal.sin_addr.s_addr = htonl(INADDR_ANY); // attaché à toutes les interfaces locales disponibles
 	pointDeRencontreLocal.sin_port = htons(5050); // = 5000 ou plus
+
+
 
 	// On demande l’attachement local de la socket
 	if((bind(socketEcoute, (struct sockaddr *)&pointDeRencontreLocal, longueurAdresse)) < 0) {
@@ -72,12 +66,10 @@ int main(int argc, char *argv[]){
 	}
 	printf("Socket placée en écoute passive ...\n");
 
+
+
 	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1){
-		erreurs = 0;
-		nberreurs[2] = '0';
-		char lettresMot[27];
-		init_game(mot, lettresMot, motDevine);
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente des demandes de connexion (quitter avec Ctrl-C)\n\n");
 
@@ -98,6 +90,8 @@ int main(int argc, char *argv[]){
 			close(socketEcoute);
 			exit(-4);
 		}
+
+
 		if(fork()){
 			serverSendMessage(&socketJoueur2, "J2");
 			serverSendMessage(&socketJoueur1, "J2");

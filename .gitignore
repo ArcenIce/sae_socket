@@ -6,3 +6,5 @@ server
 *.json
 client
 server
+client
+server
