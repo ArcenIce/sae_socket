@@ -76,34 +76,44 @@ int main(int argc, char *argv[]){
 
 	*messageRecu = clientGetMessage(&descripteurSocket); //Message pour indiquer le mot
 	int fin = 0;
+	// boucle tant que le jeu n'est pas finis
 	while (fin == 0)
 	{
-
+		// récupère le message reçu
 		*messageRecu = clientGetMessage(&descripteurSocket);
+		// vérifie si un des deux joueurs a gagné en regardant si la première lettre vaut L.
 		if (strstr(messageRecu, "L") != NULL) {
+			// alors fin vaut 1 pour stopper la boucle
 			fin = 1;
 			return 0;
 		}
 
+		// Demande au joueur de rentrer une lettre 
 		printf("Entrez une lettre à vérifier : \n");
+
+		// récupère la lettre que le joueur a entré 
 		scanf("%s", messageEnvoi);
+		// met le message en majuscule
 		*messageEnvoi = toupper(*messageEnvoi);
 
+		// Envoi le message au client
 		clientSendMessage(&descripteurSocket, messageEnvoi);
+		// Récupère le messge du client
 		*messageRecu = clientGetMessage(&descripteurSocket);
 
+		// Si la 1ère lettre du message vaut B alors c'est gagné
 		if (strstr(messageRecu, "B") != NULL) {
 			printf("Gagné !\n");
+			// fin vaut 1 pour stopper la boucle
 			fin = 1;
 		}
+		// Si la 1ère lettre du message vaut D alors c'est perdu
 		else if (strstr(messageRecu, "D") != NULL){
 			printf("Perdu, vous avez fait 6 erreurs\n");
+			// fin vaut 1 pour stopper la boucle
 			fin = 1;
 		}
-		
-		
 	}
 	close(descripteurSocket);
-
 	return 0;
 }

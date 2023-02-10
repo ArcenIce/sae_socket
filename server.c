@@ -14,8 +14,6 @@
 
 #define LG_MESSAGE 256
 
-//157.90.140.167
-
 int main(int argc, char *argv[]){
 	int socketEcoute;
 
@@ -89,6 +87,7 @@ int main(int argc, char *argv[]){
 			exit(-4);
 		}
 
+		// préviens le joueur 1 que la partie commencera quand le joueur 2 arrivera
 		serverSendMessage(&socketDialogue1, "Bienvenue, vous êtes le joueur 1, la partie commencera quand le deuxième joueur arrivera.");
 
 		socketDialogue2 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
@@ -99,6 +98,7 @@ int main(int argc, char *argv[]){
 			exit(-4);
 		}
 
+		// préviens le joueur 2 que la partie commence
 		serverSendMessage(&socketDialogue2, "Bienvenue, vous êtes le joueur 2, la partie commence maintenant.");
 
 		printf("Les deux joueurs sont connectés, on peut commencer la partie.\n");
@@ -106,6 +106,7 @@ int main(int argc, char *argv[]){
 		int joueur = 2;
 		char message[512];
 		int fin = 0;
+
 
 		*message = message_debut(message, mot, motDevine1);
 		serverSendMessage(&socketDialogue1, message);
@@ -115,26 +116,34 @@ int main(int argc, char *argv[]){
 
 		sleep(1);
 
+		// boucle de jeu 
 		while (fin == 0) {
 
+			// si joueur 2 qui joue
 			if (joueur == 2) {
-
+				// switch sur le joueur 1 pour le prochain tour
 				joueur = 1;
 
+				// prévient le joueur que c'est son tour
 				serverSendMessage(&socketDialogue2, "C'est votre tour.");
 
+				// récupère la lettre du joueur
 				*messageRecu = serverGetMessage(&socketDialogue2);
 
+				// si lettre est bonne alors on affiche le mot actualisé
 				if (verif_lettre(messageRecu, lettresMot) == 1) {
 					remplace_lettre(messageRecu, mot, motDevine2);
 					printf("Mot actualisé :%s\n", motDevine2);
 				} else {
+					// sinon on ajoute une erreur
 					erreurs2++;
 					sprintf(nberreurs2, "%d", erreurs2);
 				}
 
+				// actualise le message
 				*message = message_actu(message, motDevine2, nberreurs2);
 
+				// vérifie si il y a un winner ou non et dis aux 2 joueurs quels joueurs a gagné / perdu
 				int verif = checkStat(mot, motDevine2, erreurs2);
 				if (verif == 1) {
 					char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
@@ -153,24 +162,33 @@ int main(int argc, char *argv[]){
 					serverSendMessage(&socketDialogue2, message);
 				}
 
-			} else {
-
+			}
+			// sinon c'est le joueur 1 qui joue 
+			else {
+				
+				// switch sur le joueur 2 pour le prochain tour
 				joueur = 2;
 
+				// prévient le joueur que c'est son tour
 				serverSendMessage(&socketDialogue1, "C'est votre tour.");
 
+				// récupère la lettre du joueur
 				*messageRecu = serverGetMessage(&socketDialogue1);
 
+				// si lettre est bonne alors on affiche le mot actualisé
 				if (verif_lettre(messageRecu, lettresMot) == 1) {
 					remplace_lettre(messageRecu, mot, motDevine1);
 					printf("Mot actualisé :%s\n", motDevine1);
 				} else {
+					// sinon on ajoute une erreur
 					erreurs1++;
 					sprintf(nberreurs1, "%d", erreurs1);
 				}
 
+				// actualise le message
 				*message = message_actu(message, motDevine1, nberreurs1);
 
+				// vérifie si il y a un winner ou non et dis aux 2 joueurs quels joueurs a gagné / perdu
 				int verif = checkStat(mot, motDevine1, erreurs1);
 				if (verif == 1) {
 					char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
@@ -194,7 +212,9 @@ int main(int argc, char *argv[]){
 
 		close(socketDialogue1);
 		close(socketDialogue2);
-
+		// Le serveur revient en attente de connexion pour relancer une partie
+		// On peut fermer le serveur avec un CTRL+C
+		// Ce qui provoquera la fin de la boucle while(1) et fermera le socket d'écoute
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);
