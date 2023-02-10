@@ -123,6 +123,10 @@ int main(int argc, char *argv[]){
 
 		}
 		close(socketDialogue);
+		
+		// Le serveur revient en attente de connexion pour relancer une partie
+		// On peut fermer le serveur avec un CTRL+C
+		// Ce qui provoquera la fin de la boucle while(1) et fermera le socket d'écoute
 	}
 
 	// On ferme la ressource avant de quitter
