@@ -73,25 +73,30 @@ int main(int argc, char *argv[]){
 	}
 	printf("Connexion au serveur %s:%d réussie!\n\n",ip_dest,port_dest);
 	
+
+
  	// Envoi du message
+	// clientSendMessage(&descripteurSocket, messageEnvoi);
 
 	char player[LG_MESSAGE];
+	// réception du numéro du joueur
 	clientGetMessage(&descripteurSocket, player);
 	printf("Joueur : %s\n", player);
 
+	// jeu client pour Joueur 1
 	if (strcmp(player, "J1") == 0){
-		int waiting = 1;
-		const int trigger = 500; // ms
-		const int numDots = 4;
 		const char prompt[] = "En attente du joueur 2";
 
 		// Return and clear with spaces, then return and print prompt.
 		printf("%s\n", prompt);
 
 		char mot[150];
+		// 1er message reçu server
 		clientGetMessage(&descripteurSocket, messageRecu);
+		// demande du mot
 		printf("\nEntrez un mot à faire deviner :\n");
 		scanf("%s", mot);
+		// passage du mot en majuscule
 		for (int i = 0; i<sizeof(mot); i++){
 			mot[i] = toupper(mot[i]);
 		}
@@ -102,34 +107,45 @@ int main(int argc, char *argv[]){
 		char motDevine[sizeof(mot)];
 		int erreurs = 0;
 		char nberreurs[2] = "0";
+		// initialisation du jeu avec une liste des lettres dans le mot et le mot changé en _
 		init_game(mot, lettresMot, motDevine);
+		// envoi du mot au server
 		clientSendMessage(&descripteurSocket, motDevine);
 		int fin = 0;
 		char lettre[LG_MESSAGE];
 
+		// PARTIE
 		while (fin == 0)
 		{
+			// réception message server
 			clientGetMessage(&descripteurSocket, lettre);
 			printf("\nLe Joueur 2 a envoyé la lettre %s\n", lettre);
+			// check si la lettre fait parti du mot
 			if (verif_lettre(lettre, lettresMot) == 1){
+				// afficahage de la lettre dans le mot
 				remplace_lettre(lettre, mot, motDevine);
 			}
 			else{
 				erreurs++;
+				// affichage des erreurs
 				sprintf(nberreurs, "%d", erreurs);
 			}
+			// vérification de l'état de la partie
 			int stat = checkStat(mot, motDevine, erreurs);
+			// si partie non finie
 			if (stat == 0){
 				message_actu(messageEnvoi, motDevine, nberreurs);
 				printf("Actualisation du message : %s\n", messageEnvoi);
 				clientSendMessage(&descripteurSocket, messageEnvoi);
 			}
+			// partie gagnée
 			else if (stat == 1){
 				printf("Le Joueur 2 a trouvé le mot !\n");
 				sprintf(messageEnvoi, "Fin de la partie !\nVous avez trouvé le mot %s !", mot);
 				clientSendMessage(&descripteurSocket, messageEnvoi);
 				fin = 1;
 			}
+			// partie perdue
 			else if (stat == 2){
 				printf("Le Joueur 2 a perdu !\n");
 				sprintf(messageEnvoi, "Fin de la partie !\nVous n'avez pas trouvé le mot %s !", mot);
@@ -137,17 +153,20 @@ int main(int argc, char *argv[]){
 				fin = 1;
 			}
 		}
-		
 	}
 
+	// jeu client pour Joueur 2
 	else if (strcmp(player, "J2") == 0){
 		printf("En attente du mot du Joueur 1\n");
+		// attente réception du mot
 		clientGetMessage(&descripteurSocket, messageRecu);
 		printf("Le mot à deviner est : %s\n", messageRecu);
 		int fin = 0;
 		char lettre[LG_MESSAGE];
 		int start = 1;
+		// Partie du joueur 2
 		while (fin == 0){
+			// on évite d'afficher le message pour le 1er coup
 			if (start != 1){
 				printf("Mot actualisé : %s\n\n", messageRecu);
 			}
@@ -155,14 +174,19 @@ int main(int argc, char *argv[]){
 				start = 0;
 				printf("\n");
 			}
-			
+			// demande de lettre
 			printf("Entrez un lettre :\n");
 			scanf("%s", lettre);
+			// récupération de la 1ère lettre seulement et en majuscule
 			*lettre = toupper(lettre[0]);
+			// envoi de la lettre
 			clientSendMessage(&descripteurSocket, lettre);
+			// réception du lot actualisé
 			clientGetMessage(&descripteurSocket, messageRecu);
+			// Fin de partie
 			if (strstr(messageRecu, "Fin de la partie") != NULL)
 			{
+				// affichage du message de fin de partie
 				printf("%s\n", messageRecu);
 				fin = 1;
 			}
