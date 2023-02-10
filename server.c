@@ -15,7 +15,7 @@
 
 #define LG_MESSAGE 256
 
-//157.90.140.167
+//157.90.140.167 - adresse du serveur distant
 
 int main(int argc, char *argv[]){
 	int socketEcoute;
@@ -29,14 +29,8 @@ int main(int argc, char *argv[]){
 	char messageEnvoi[LG_MESSAGE];
 	int retour;
 
-	char mot[LG_MESSAGE];
-	strcpy(mot, "TABULATION");
-	char lettresMot[27];
-	char motDevine[sizeof(mot)];
-	int erreurs = 0;
-	char nberreurs[2] = "0";
-	
-	init_game(mot, lettresMot, motDevine);
+	char mot[LG_MESSAGE]; //Variable du mot à deviner
+	strcpy(mot, "TABULATION");  //Mot choisi
 
 	// Crée un socket de communication
 	int option = 1;
@@ -72,9 +66,13 @@ int main(int argc, char *argv[]){
 
 	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1){
-		erreurs = 0;
-		nberreurs[2] = '0';
-		init_game(mot, lettresMot, motDevine);
+
+		char lettresMot[27]; //Les lettres contenues dans le mot
+		char motDevine[sizeof(mot)]; //Le mot avec des tirets
+		int erreurs = 0;
+		char nberreurs[2] = '0'; //Caractère pour afficher le nombre d'erreurs
+		init_game(mot, lettresMot, motDevine); //Initialisation du jeu, on cache le mot
+
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente d’une demande de connexion (quitter avec Ctrl-C)\n\n");
 
@@ -87,27 +85,26 @@ int main(int argc, char *argv[]){
    			exit(-4);
 		}
 
-		char message[512];
-		int fin = 0;
+		char message[512]; //Variable pour tenir les messages transités
+		int fin = 0; //Si le jeu est fini ou non
 
-		*message = message_debut(message, mot, motDevine);
-		serverSendMessage(&socketDialogue, message);
+		*message = message_debut(message, mot, motDevine); //generation du message de départ (bienvenue, le mot est...)
+		serverSendMessage(&socketDialogue, message); //On l'envoie
 
 		while (fin == 0) {
-    		*messageRecu = serverGetMessage(&socketDialogue);
+    		*messageRecu = serverGetMessage(&socketDialogue); //On reçoit la lettre
 
-			if (verif_lettre(messageRecu, lettresMot) == 1) {
+			if (verif_lettre(messageRecu, lettresMot) == 1) { //vérifie si elle est correcte
 				remplace_lettre(messageRecu, mot, motDevine);
 				printf("Mot actualisé :%s\n", motDevine);
 			} else {
 				erreurs++;
-				// printf("%d", erreurs);
 				sprintf(nberreurs, "%d", erreurs);
 			}
 
-			*message = message_actu(message, motDevine, nberreurs);
+			*message = message_actu(message, motDevine, nberreurs); //Envoie le mot actualisé avec les tirets
 
-			int verif = checkStat(mot, motDevine, erreurs);
+			int verif = checkStat(mot, motDevine, erreurs); //Partie gagnée ou perdue ou aucun des deux ?
 			if (verif == 1) {
 				char messageFin[512] = "Bravo vous avez trouvé ! Le mot était : ";
 				strcat(messageFin,mot);
@@ -120,15 +117,14 @@ int main(int argc, char *argv[]){
 				serverSendMessage(&socketDialogue, messageFin);
 				fin = 1;
 			}
-			else{
+			else {
 				serverSendMessage(&socketDialogue, message);
 			}
 
-			// On envoie des données vers le client (cf. protocole)
-			// serverSendMessage(&socketDialogue, messageRecu);
 		}
 		close(socketDialogue);
 	}
+
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);
 	return 0;

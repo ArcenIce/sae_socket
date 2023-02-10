@@ -70,21 +70,18 @@ int main(int argc, char *argv[]){
 	}
 	printf("Connexion au serveur %s:%d réussie!\n",ip_dest,port_dest);
 
- 	// Envoi du message
-	// clientSendMessage(&descripteurSocket, messageEnvoi);
-
-	*messageRecu = clientGetMessage(&descripteurSocket);
+	*messageRecu = clientGetMessage(&descripteurSocket); //On attend le message de départ pour commencer la partie
 	int fin = 0;
 	while (fin == 0)
 	{
 		printf("Entrez une lettre à vérifier : \n");
 		scanf("%s", messageEnvoi);
-		*messageEnvoi = toupper(*messageEnvoi);
+		*messageEnvoi = toupper(*messageEnvoi); //Met en maj la lettre
 
-		clientSendMessage(&descripteurSocket, messageEnvoi);
-		*messageRecu = clientGetMessage(&descripteurSocket);
+		clientSendMessage(&descripteurSocket, messageEnvoi);  //Envoie la lettre
+		*messageRecu = clientGetMessage(&descripteurSocket); //Receptionne le message actualisé
 
-		if (strstr(messageRecu, "B") != NULL) {
+		if (strstr(messageRecu, "B") != NULL) { //Check retour si gagné ou perdu
 			printf("Gagné !\n");
 			fin = 1;
 		}
