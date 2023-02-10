@@ -6,34 +6,16 @@
 #include <string.h> /* pour memset */
 #include <netinet/in.h> /* pour struct sockaddr_in */
 #include <arpa/inet.h> /* pour htons et inet_aton */
+#include <string.h>
+
+#include "utils/socketUtils.c"
+#include "utils/gameUtils.c"
 
 #define PORT IPPORT_USERRESERVED // = 5000 (ports >= 5000 réservés pour usage explicite)
 
 #define LG_MESSAGE 256
 
-void lire_heure(char* heure){
-	FILE *fpipe;
-	
-	fpipe = popen("date '+%X'","r");
-	if (fpipe == NULL){
-    	perror("popen" );
-    	exit(-1);
-  	}
-	fgets(heure, LG_MESSAGE, fpipe);
-	pclose(fpipe);
-}
-
-void lire_date(char* date){
-	FILE *fpipe;
-	
-	fpipe = popen("date '+%A %d %B %Y'","r");
-	if (fpipe == NULL){
-    	perror("popen" );
-    	exit(-1);
-  	}
-	fgets(date, LG_MESSAGE, fpipe);
-	pclose(fpipe);
-}
+//157.90.140.167
 
 int main(int argc, char *argv[]){
 	int socketEcoute;
@@ -41,21 +23,24 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in pointDeRencontreLocal;
 	socklen_t longueurAdresse;
 
-	int socketDialogue;
+	int socketJoueur1;
+	int socketJoueur2;
 	struct sockaddr_in pointDeRencontreDistant;
 	char messageRecu[LG_MESSAGE];
-	char messageEnvoi[LG_MESSAGE];
-	int ecrits, lus; /* nb d’octets ecrits et lus */
-	int retour;
+	char messageJ1[LG_MESSAGE];
+	char messageJ2[LG_MESSAGE];
 
+	int option = 1;
 	// Crée un socket de communication
-	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); 
-	// Teste la valeur renvoyée par l’appel système socket() 
+	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
+	setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
+	// Teste la valeur renvoyée par l’appel système socket()
 	if(socketEcoute < 0){
-		perror("socket"); // Affiche le message d’erreur 
-	exit(-1); // On sort en indiquant un code erreur
+		perror("socket"); // Affiche le message d’erreur
+		exit(-1); // On sort en indiquant un code erreur
 	}
 	printf("Socket créée avec succès ! (%d)\n", socketEcoute); // On prépare l’adresse d’attachement locale
+
 
 	// Remplissage de sockaddrDistant (structure sockaddr_in identifiant le point d'écoute local)
 	longueurAdresse = sizeof(pointDeRencontreLocal);
@@ -63,76 +48,77 @@ int main(int argc, char *argv[]){
 	memset(&pointDeRencontreLocal, 0x00, longueurAdresse); pointDeRencontreLocal.sin_family = PF_INET;
 	pointDeRencontreLocal.sin_addr.s_addr = htonl(INADDR_ANY); // attaché à toutes les interfaces locales disponibles
 	pointDeRencontreLocal.sin_port = htons(5050); // = 5000 ou plus
-	
+
+
+
 	// On demande l’attachement local de la socket
 	if((bind(socketEcoute, (struct sockaddr *)&pointDeRencontreLocal, longueurAdresse)) < 0) {
 		perror("bind");
-		exit(-2); 
+		exit(-2);
 	}
 	printf("Socket attachée avec succès !\n");
 
 	// On fixe la taille de la file d’attente à 5 (pour les demandes de connexion non encore traitées)
-	if(listen(socketEcoute, 5) < 0){
+	if(listen(socketEcoute, 2) < 0){
    		perror("listen");
    		exit(-3);
 	}
 	printf("Socket placée en écoute passive ...\n");
-	
-	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment ! 
+
+
+
+	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1){
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
-		printf("Attente d’une demande de connexion (quitter avec Ctrl-C)\n\n");
-		
+		printf("Attente des demandes de connexion (quitter avec Ctrl-C)\n\n");
+
 		// c’est un appel bloquant
-		socketDialogue = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
-		if (socketDialogue < 0) {
+		socketJoueur1 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
+		if (socketJoueur1 < 0) {
    			perror("accept");
-			close(socketDialogue);
+			close(socketJoueur1);
    			close(socketEcoute);
    			exit(-4);
 		}
-		
-		// On réception les données du client (cf. protocole)
-		lus = read(socketDialogue, messageRecu, LG_MESSAGE*sizeof(char)); // ici appel bloquant
-		switch(lus) {
-			case -1 : /* une erreur ! */ 
-				  perror("read"); 
-				  close(socketDialogue); 
-				  exit(-5);
-			case 0  : /* la socket est fermée */
-				  fprintf(stderr, "La socket a été fermée par le client !\n\n");
-   				  close(socketDialogue);
-   				  return 0;
-			default:  /* réception de n octets */
-				  printf("Message reçu : %s (%d octets)\n\n", messageRecu, lus);
+		serverSendMessage(&socketJoueur1, "J1");
+		socketJoueur2 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
+		if (socketJoueur2 < 0)
+		{
+			perror("accept");
+			close(socketJoueur2);
+			close(socketEcoute);
+			exit(-4);
 		}
+		// Une fois qu'on a trouvé les 2 joueurs on fait un fork pour diviser le processus
+		// et relancer une autre partie qui sera en attente de connexion.
+		if(fork()){
 
-		// Déterminer le message à envoyer en fonction de la demande du client
-		if(strcmp(messageRecu,"heure")==0)
-			lire_heure(messageEnvoi);
-		else if(strcmp(messageRecu,"date")==0)
-			lire_date(messageEnvoi);
-		else
-			sprintf(messageEnvoi, "Commande non reconnue");
+			serverSendMessage(&socketJoueur2, "J2");
+			serverSendMessage(&socketJoueur1, "J2");
+			int fin = 0;
 
-		// On envoie des données vers le client (cf. protocole)
-		ecrits = write(socketDialogue, messageEnvoi, strlen(messageEnvoi)); 
-		switch(ecrits){
-			case -1 : /* une erreur ! */
-				  perror("write");
-   				  close(socketDialogue);
-   				  exit(-6);
-			case 0 :  /* la socket est fermée */
-				  fprintf(stderr, "La socket a été fermée par le client !\n\n");
-				  close(socketDialogue);
-				  return 0;
-			default:  /* envoi de n octets */
-   				  printf("Message %s envoyé (%d octets)\n\n", messageEnvoi, ecrits);
-				  // On ferme la socket de dialogue et on se replace en attente ...
-   				  close(socketDialogue);
+			serverGetMessage(&socketJoueur1, messageJ2);
+			printf("s : %s\n", messageJ2);
+
+			serverSendMessage(&socketJoueur2, messageJ2);
+
+			while (fin == 0) {
+				serverGetMessage(&socketJoueur2, messageJ1);
+				serverSendMessage(&socketJoueur1, messageJ1);
+
+				serverGetMessage(&socketJoueur1, messageJ2);
+				serverSendMessage(&socketJoueur2, messageJ2);
+				if (strstr(messageJ2,"Fin de la partie !") != NULL){
+					fin = 1;
+				}
+			}
+			// On ferme les sockets de liaison avec les clients.
+			close(socketJoueur1);
+			close(socketJoueur2);
+			// Dans cette version on ferme le socket d'écoute à la fin de la partie car
+			// le fork lance d'autres parties en attente pas besoin de relancer la partie actuelle.
+			close(socketEcoute);
+			return 0;
 		}
 	}
-	// On ferme la ressource avant de quitter
-   	close(socketEcoute);
-	return 0; 
 }
