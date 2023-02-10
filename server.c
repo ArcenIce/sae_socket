@@ -23,17 +23,24 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in pointDeRencontreLocal;
 	socklen_t longueurAdresse;
 
+	// Sockets de connexion aux joueurs
 	int socketJoueur1;
 	int socketJoueur2;
 	struct sockaddr_in pointDeRencontreDistant;
+
+	// Messages utilisés pour transférer les 
 	char messageRecu[LG_MESSAGE];
 	char messageJ1[LG_MESSAGE];
 	char messageJ2[LG_MESSAGE];
 
+	// Variable pour le problème "address already used"
 	int option = 1;
+
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
+	// Permet de régler le problème "address already used" qui fait perdre du temps pour relancer le server
 	setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
+
 	// Teste la valeur renvoyée par l’appel système socket()
 	if(socketEcoute < 0){
 		perror("socket"); // Affiche le message d’erreur
@@ -68,6 +75,7 @@ int main(int argc, char *argv[]){
 		printf("Attente des demandes de connexion (quitter avec Ctrl-C)\n\n");
 
 		// c’est un appel bloquant
+		// Connexion au joueur 1
 		socketJoueur1 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
 		if (socketJoueur1 < 0) {
    			perror("accept");
@@ -75,6 +83,7 @@ int main(int argc, char *argv[]){
    			close(socketEcoute);
    			exit(-4);
 		}
+		// Une fois connecté on envoie J1 au joueur 1 pour qu'il affiche le message d'attente
 		serverSendMessage(&socketJoueur1, "J1");
 		socketJoueur2 = accept(socketEcoute, (struct sockaddr *)&pointDeRencontreDistant, &longueurAdresse);
 		if (socketJoueur2 < 0)
@@ -84,28 +93,43 @@ int main(int argc, char *argv[]){
 			close(socketEcoute);
 			exit(-4);
 		}
+		// Une fois connecté on envoie J2 aux deux joueurs pour pouvoir lancer la partie
 		serverSendMessage(&socketJoueur2, "J2");
 		serverSendMessage(&socketJoueur1, "J2");
 
+		// Variable qui sert pour finir la partie
 		int fin = 0;
 
-		serverGetMessage(&socketJoueur1, messageJ2);
-		printf("s : %s\n", messageJ2);
+		// Initialisation de la partie
 
+		// On attend le mot à deviner du joueur 1 (ex: ______ pour COUCOU)
+		serverGetMessage(&socketJoueur1, messageJ2);
+		// On envois ce mot au joueur 2
 		serverSendMessage(&socketJoueur2, messageJ2);
 
+		// Boucle de jeu
 		while (fin == 0) {
+			// On attend la lettre du joueur 2
     		serverGetMessage(&socketJoueur2, messageJ1);
+			// On l'envoie au joueur 1
 			serverSendMessage(&socketJoueur1, messageJ1);
 
+			// On attend l'actualisation de la partie par le joueur 1
 			serverGetMessage(&socketJoueur1, messageJ2);
+			// On l'envoie au joueur 2
 			serverSendMessage(&socketJoueur2, messageJ2);
+			// On vérifie si la partie est finie ou pas
+			// En regardant si le message du joueur 1 contient "Fin de la partie"
 			if (strstr(messageJ2,"Fin de la partie !") != NULL){
 				fin = 1;
 			}
 		}
+		// On ferme les sockets de liaison aux joueurs.
 		close(socketJoueur1);
 		close(socketJoueur2);
+		// Le serveur revient en attente de connexion pour relancer une partie
+		// On peut fermer le serveur avec un CTRL+C
+		// Ce qui provoquera la fin de la boucle while(1) et fermera le socket d'écoute
 	}
 	// On ferme la ressource avant de quitter
    	close(socketEcoute);

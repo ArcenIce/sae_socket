@@ -9,6 +9,9 @@
 
 #define LG_MESSAGE 256
 
+// Permet de récupérer le message envoyé par un client
+// Elle met le message dans la variable messageRecu.
+// La variable dialog est le socket où on envoie le message.
 void serverGetMessage(int *dialog, char *messageRecu) {
 
     int lus;
@@ -28,6 +31,8 @@ void serverGetMessage(int *dialog, char *messageRecu) {
     }
 }
 
+// Permet d'envoyer le message dans la variable message à un client.
+// La variable dialog est le socket où on envoie le message.
 int serverSendMessage(int *dialog, char *message) {
     int ecrits;
 	ecrits = write(*dialog, message, strlen(message)); 
@@ -44,7 +49,9 @@ int serverSendMessage(int *dialog, char *message) {
 	}
 }
 
-
+// Permet de récupérer le message envoyé par le serveur.
+// Elle met le message dans la variable messageRecu.
+// La variable dialog est le socket où on envoie le message.
 void clientGetMessage(int *dialog, char *messageRecu) {
 
     int nb;
@@ -64,7 +71,9 @@ void clientGetMessage(int *dialog, char *messageRecu) {
 	}	// On ferme la ressource avant de quitter
 }
 
-int clientSendMessage(int *dialog, char message[]) {
+// Permet d'envoyer le message dans la variable message au serveur.
+// La variable dialog est le socket où on envoie le message.
+int clientSendMessage(int *dialog, char *message) {
 
     int nb;
 
