@@ -73,10 +73,7 @@ int main(int argc, char *argv[]){
 	}
 	printf("Connexion au serveur %s:%d réussie!\n\n",ip_dest,port_dest);
 	
-
-
  	// Envoi du message
-	// clientSendMessage(&descripteurSocket, messageEnvoi);
 
 	char player[LG_MESSAGE];
 	clientGetMessage(&descripteurSocket, player);
@@ -143,7 +140,6 @@ int main(int argc, char *argv[]){
 		
 	}
 
-
 	else if (strcmp(player, "J2") == 0){
 		printf("En attente du mot du Joueur 1\n");
 		clientGetMessage(&descripteurSocket, messageRecu);
@@ -172,27 +168,5 @@ int main(int argc, char *argv[]){
 			}
 		}
 	}
-
-	// int fin = 0;
-	// while (fin == 0)
-	// {
-	// 	printf("Entrez une lettre à vérifier : \n");
-	// 	scanf("%s", messageEnvoi);
-	// 	*messageEnvoi = toupper(*messageEnvoi);
-
-	// 	clientSendMessage(&descripteurSocket, messageEnvoi);
-	// 	*messageRecu = clientGetMessage(&descripteurSocket);
-
-	// 	if (strstr(messageRecu, "B") != NULL) {
-	// 		printf("Gagné !\n");
-	// 		fin = 1;
-	// 	}
-	// 	else if (strstr(messageRecu, "D") != NULL){
-	// 		printf("Perdu, vous avez fait 6 erreurs\n");
-	// 		fin = 1;
-	// 	}
-	// }
-	// close(descripteurSocket);
-
 	return 0;
 }

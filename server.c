@@ -29,16 +29,6 @@ int main(int argc, char *argv[]){
 	char messageRecu[LG_MESSAGE];
 	char messageJ1[LG_MESSAGE];
 	char messageJ2[LG_MESSAGE];
-	int retour;
-
-	char mot[LG_MESSAGE];
-	strcpy(mot, "TABULATION");
-	char lettresMot[27];
-	char motDevine[sizeof(mot)];
-	int erreurs = 0;
-	char nberreurs[2] = "0";
-	
-	init_game(mot, lettresMot, motDevine);
 
 	int option = 1;
 	// Crée un socket de communication
@@ -74,10 +64,6 @@ int main(int argc, char *argv[]){
 
 	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1){
-		erreurs = 0;
-		nberreurs[2] = '0';
-		char lettresMot[27];
-		init_game(mot, lettresMot, motDevine);
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente des demandes de connexion (quitter avec Ctrl-C)\n\n");
 

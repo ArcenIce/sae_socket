@@ -10,23 +10,6 @@
 
 #define ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-// int strinstr(char *cs, char *ct)
-// {
-//     int index = -1;
-
-//     if (cs != NULL && ct != NULL)
-//     {
-//         char *ptr_pos = NULL;
-
-//         ptr_pos = strstr(&cs, &ct);
-//         if (ptr_pos != NULL)
-//         {
-//             index = ptr_pos - cs;
-//         }
-//     }
-//     return index;
-// }
-
 int verif_lettre(char *lettreDonne, char *lettresMot)
 {
     for (int i = 0; i < strlen(lettresMot); i++)
@@ -58,7 +41,6 @@ void init_game(char *mot, char *lettreMot, char *motDevine)
 
         if (strchr(lettreMot, mot[i]) == 0)
         {
-            // printf("%c", mot[i]);
             strcat(lettreMot, &mot[i]);
         }
         strcat(motDevine, "_");
@@ -85,16 +67,8 @@ char message_debut(char *messageModifiable, char *mot, char *motDevine) {
     return *messageModifiable;
 }
 
-int messageLettre(char *messageModifiable, char *lettre)
-{
-    strcpy(messageModifiable, "La lettre donnée par l'autre joueur est : ");
-    strcat(messageModifiable, lettre);
-    return *messageModifiable;
-}
-
 void message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
     strcpy(messageModifiable, "");
-    // char messageForme[64] = "Voici le mot actualisé: ";
     char messageForme[64] = ""; char messageErreurs[24] = "\nNombre d'erreurs: ";
 	strcat(messageModifiable, messageForme);
     strcat(messageModifiable, motDevine);
