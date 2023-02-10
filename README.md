@@ -58,6 +58,10 @@ Même principe que la version 2 mais le serveur doit gérer plusieurs parties do
 &nbsp;• est perpétuellement en attente de connexion pour de nouvelles parties  
 &nbsp;• gère les échanges des parties en cours  
 
+<p align="center">
+  <img src="https://cdn.discordapp.com/attachments/1072527874462072833/1073534381341286401/image.png">
+</p>
+
 ### PT3N version 4 (après avoir terminé et testé V2) :
 Même principe que la version 2 mais le serveur doit mettre directement les 2 joueurs connectés en communication pour qu’ils échangent leurs messages sans passer par le serveur.  
 Ce mécanisme doit du coup permettre au serveur d’être perpétuellement en attente de nouvelles
