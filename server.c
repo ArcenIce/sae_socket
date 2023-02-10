@@ -6,7 +6,6 @@
 #include <string.h> /* pour memset */
 #include <netinet/in.h> /* pour struct sockaddr_in */
 #include <arpa/inet.h> /* pour htons et inet_aton */
-#include <string.h>
 
 #include "utils/socketUtils.c"
 #include "utils/gameUtils.c"
@@ -34,8 +33,9 @@ int main(int argc, char *argv[]){
 	char lettresMot[27];
 
 	// Crée un socket de communication
+	int option = 1;
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0);
-	setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, 1, sizeof(1));
+	setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
 	// Teste la valeur renvoyée par l’appel système socket()
 	if(socketEcoute < 0){
 		perror("socket"); // Affiche le message d’erreur
@@ -70,12 +70,12 @@ int main(int argc, char *argv[]){
 		char motDevine1[sizeof(mot)];
 		int erreurs1 = 0;
 		char nberreurs1[2] = "0";
-		init_game(&mot, lettresMot, motDevine1);
+		init_game(mot, lettresMot, motDevine1);
 
 		char motDevine2[sizeof(mot)];
 		int erreurs2 = 0;
 		char nberreurs2[2] = "0";
-		init_game(&mot, lettresMot, motDevine2);
+		init_game(mot, lettresMot, motDevine2);
 
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente d’une demande de connexion (quitter avec Ctrl-C)\n\n");
@@ -107,11 +107,11 @@ int main(int argc, char *argv[]){
 		char message[512];
 		int fin = 0;
 
-		*message = message_debut(&message, &mot, &motDevine1);
-		serverSendMessage(&socketDialogue1, &message);
+		*message = message_debut(message, mot, motDevine1);
+		serverSendMessage(&socketDialogue1, message);
 
-		*message = message_debut(&message, &mot, &motDevine2);
-		serverSendMessage(&socketDialogue2, &message);
+		*message = message_debut(message, mot, motDevine2);
+		serverSendMessage(&socketDialogue2, message);
 
 		sleep(1);
 
@@ -126,14 +126,14 @@ int main(int argc, char *argv[]){
 				*messageRecu = serverGetMessage(&socketDialogue2);
 
 				if (verif_lettre(messageRecu, lettresMot) == 1) {
-					remplace_lettre(&messageRecu, &mot, motDevine2);
+					remplace_lettre(messageRecu, mot, motDevine2);
 					printf("Mot actualisé :%s\n", motDevine2);
 				} else {
 					erreurs2++;
 					sprintf(nberreurs2, "%d", erreurs2);
 				}
 
-				*message = message_actu(&message, &motDevine2, &nberreurs2);
+				*message = message_actu(message, motDevine2, nberreurs2);
 
 				int verif = checkStat(mot, motDevine2, erreurs2);
 				if (verif == 1) {
@@ -162,14 +162,14 @@ int main(int argc, char *argv[]){
 				*messageRecu = serverGetMessage(&socketDialogue1);
 
 				if (verif_lettre(messageRecu, lettresMot) == 1) {
-					remplace_lettre(&messageRecu, &mot, motDevine1);
+					remplace_lettre(messageRecu, mot, motDevine1);
 					printf("Mot actualisé :%s\n", motDevine1);
 				} else {
 					erreurs1++;
 					sprintf(nberreurs1, "%d", erreurs1);
 				}
 
-				*message = message_actu(&message, &motDevine1, &nberreurs1);
+				*message = message_actu(message, motDevine1, nberreurs1);
 
 				int verif = checkStat(mot, motDevine1, erreurs1);
 				if (verif == 1) {
