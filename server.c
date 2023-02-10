@@ -89,9 +89,10 @@ int main(int argc, char *argv[]){
 			close(socketEcoute);
 			exit(-4);
 		}
-
-
+		// Une fois qu'on a trouvé les 2 joueurs on fait un fork pour diviser le processus
+		// et relancer une autre partie qui sera en attente de connexion.
 		if(fork()){
+
 			serverSendMessage(&socketJoueur2, "J2");
 			serverSendMessage(&socketJoueur1, "J2");
 			int fin = 0;
@@ -111,9 +112,11 @@ int main(int argc, char *argv[]){
 					fin = 1;
 				}
 			}
+			// On ferme les sockets de liaison avec les clients.
 			close(socketJoueur1);
 			close(socketJoueur2);
-			// On ferme la ressource avant de quitter
+			// Dans cette version on ferme le socket d'écoute à la fin de la partie car
+			// le fork lance d'autres parties en attente pas besoin de relancer la partie actuelle.
 			close(socketEcoute);
 			return 0;
 		}
