@@ -85,13 +85,6 @@ char message_debut(char *messageModifiable, char *mot, char *motDevine) {
     return *messageModifiable;
 }
 
-int messageLettre(char *messageModifiable, char *lettre)
-{
-    strcpy(messageModifiable, "La lettre donnée par l'autre joueur est : ");
-    strcat(messageModifiable, lettre);
-    return *messageModifiable;
-}
-
 void message_actu(char *messageModifiable, char *motDevine, char *nberreurs) {
     strcpy(messageModifiable, "");
     // char messageForme[64] = "Voici le mot actualisé: ";

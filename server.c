@@ -29,7 +29,6 @@ int main(int argc, char *argv[]){
 	char messageRecu[LG_MESSAGE];
 	char messageJ1[LG_MESSAGE];
 	char messageJ2[LG_MESSAGE];
-	int retour;
 
 	int option = 1;
 	// Crée un socket de communication
