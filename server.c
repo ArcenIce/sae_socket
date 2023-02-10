@@ -71,10 +71,10 @@ int main(int argc, char *argv[]){
 	}
 	printf("Socket placée en écoute passive ...\n");
 
-
+	int tourne = 1;
 
 	// boucle d’attente de connexion : en théorie, un serveur attend indéfiniment !
-	while(1){
+	while(tourne == 1){
 		memset(messageRecu, 0x00, LG_MESSAGE*sizeof(char));
 		printf("Attente des demandes de connexion (quitter avec Ctrl-C)\n\n");
 
@@ -139,6 +139,7 @@ int main(int argc, char *argv[]){
 			// Dans cette version on ferme le socket d'écoute à la fin de la partie car
 			// le fork lance d'autres parties en attente pas besoin de relancer la partie actuelle.
 			close(socketEcoute);
+			tourne = 0;
 			return 0;
 		}
 	}
