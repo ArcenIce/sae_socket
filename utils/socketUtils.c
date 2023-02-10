@@ -77,7 +77,7 @@ int clientSendMessage(int *dialog, char message[]) {
 			fprintf(stderr, "La socket a été fermée par le serveur !\n\n");
 			return 0;
 		default: /* envoi de n octets */
-			//printf("Message envoyé");
+			return 0;
 			// printf("Message %s envoyé! (%d octets)\n\n", message, nb);
 	}
 
