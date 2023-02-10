@@ -120,10 +120,9 @@ int main(int argc, char *argv[]){
 			}
 			close(socketJoueur1);
 			close(socketJoueur2);
-		
-		// On ferme la ressource avant de quitter
-		close(socketEcoute);
-		return 0;
+			// On ferme la ressource avant de quitter
+			close(socketEcoute);
+			return 0;
 		}
 	}
 }
